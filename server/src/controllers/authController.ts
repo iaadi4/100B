@@ -28,7 +28,7 @@ const login = async (req: Request, res: Response) => {
         if(response == 400)
             return res.status(statusCode.BAD_REQUEST).json({error: "incorrect password"});
         const { refreshToken, accessToken } = response;
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24*60*60*1000 });
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, maxAge: 24*60*60*1000 });
         return res.status(statusCode.SUCCESS).json({accessToken: accessToken});
     } catch(error) {
         console.log('Something went wrong in the controller layer');
