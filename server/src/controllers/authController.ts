@@ -27,7 +27,9 @@ const login = async (req: Request, res: Response) => {
             return res.status(statusCode.NOT_FOUND).json({error: "user not found"});
         if(response == 400)
             return res.status(statusCode.BAD_REQUEST).json({error: "incorrect password"});
-        return res.status(statusCode.SUCCESS).json(response);
+        const { refreshToken, accessToken } = response;
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24*60*60*1000 });
+        return res.status(statusCode.SUCCESS).json({accessToken: accessToken});
     } catch(error) {
         console.log('Something went wrong in the controller layer');
         return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to login"});
