@@ -43,7 +43,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
                     error: err
                 });
             }
-            const accessToken = jwt.sign({id: user.id, email: user.email }, ACCESS_TOKEN_SECRET!, {expiresIn: "30s"})
+            const accessToken = jwt.sign({id: user.id, email: user.email, role: user.role}, ACCESS_TOKEN_SECRET!, {expiresIn: "30s"})
             return res.status(statusCode.SUCCESS).json({
                 accessToken: accessToken
             });
