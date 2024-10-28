@@ -1,25 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {toast} from"sonner";
+import { toast } from "sonner";
 import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "@/store/Authstore";
 
 const ForgotPassword = () => {
-    const [email, setEmail] = useState<string>("");
-    const { forgotPassword, loading } = useUserStore();
+  const [email, setEmail] = useState<string>("");
+  const { forgotPassword, loading } = useUserStore();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-          await forgotPassword(email);
-          toast.success ('Reset link sent successfully!');
-        } catch (error) {
-          toast.error('Failed to send reset link.');
-        }
-      };
-    
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await forgotPassword(email);
+      toast.success('Reset link sent successfully!');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to send reset link.');
+    }
+  };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full">
@@ -29,31 +30,31 @@ const ForgotPassword = () => {
           <p className="text-sm text-gray-600">Enter your email address to reset your password</p>
         </div>
         <div className="relative w-full">
-            <Input
+          <Input
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             className="pl-10"
-            />
-            <Mail className="absolute inset-y-2 left-2 text-gray-600 pointer-events-none"/>
+          />
+          <Mail className="absolute inset-y-2 left-2 text-gray-600 pointer-events-none" />
         </div>
         {
-            loading ? (
-                <Button disabled className=""><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Please wait</Button>
-            ) : (
-                <Button className="bg-blue-500 ">Send Reset Link</Button>
-            )
+          loading ? (
+            <Button disabled className=""><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait</Button>
+          ) : (
+            <Button className="bg-blue-500 ">Send Reset Link</Button>
+          )
         }
         <span className="text-center">
-            Back to{" "}
-            <Link to="/login" className="text-blue-500">Login</Link>
+          Back to{" "}
+          <Link to="/login" className="text-blue-500">Login</Link>
         </span>
       </form>
     </div>
   );
 };
 
-export default ForgotPassword;  
+export default ForgotPassword;
 
 
