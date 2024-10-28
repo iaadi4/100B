@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../config/serverConfig";
@@ -14,22 +14,25 @@ interface loginData {
 interface signupData extends loginData {
     name: string,
     year: string,
-    branch: string
+    branch: string,
+    role : string
 }
 
 class AuthService {
 
-    async signup({email, name, password, year, branch}: signupData) {
+    async signup({email, name, password, year, branch, role}: signupData) {
         try {
             const salt = bcrypt.genSaltSync(10);
             const encryptedPassword = await bcrypt.hashSync(password, salt);
+            const enumRole = role == "STUDENT" ? Role.STUDENT : Role.TEACHER;
             const response = await prisma.user.create({
                 data: {
                     email,
                     password: encryptedPassword,
                     name,
                     year,
-                    branch
+                    branch,
+                    role: [enumRole]
                 }
             })
             return response;
@@ -51,8 +54,8 @@ class AuthService {
             const isPasswordCorrect = await bcrypt.compareSync(password, user.password);
             if(!isPasswordCorrect)
                 return 400;
-            const accessToken = jwt.sign({id: user.id, email: user.email}, ACCESS_TOKEN_SECRET!, { expiresIn : "30s" });
-            const refreshToken = jwt.sign({id: user.id, email: user.email}, REFRESH_TOKEN_SECRET!, { expiresIn : "1w" });
+            const accessToken = jwt.sign({id: user.id, email: user.email, role: user.role}, ACCESS_TOKEN_SECRET!, { expiresIn : "30s" });
+            const refreshToken = jwt.sign({id: user.id, email: user.email, role: user.role}, REFRESH_TOKEN_SECRET!, { expiresIn : "1w" });
             await prisma.user.update({
                 where: {
                     id: user.id
