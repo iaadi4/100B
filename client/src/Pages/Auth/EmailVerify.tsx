@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useUserStore } from "../store/Authstore";
+import { useUserStore } from "../../store/Authstore";
 import { toast } from "sonner";
 
 
@@ -47,7 +47,8 @@ const EmailVerificationPage = () => {
 	};
 
 	const handleSubmit = async (e?: React.FormEvent) => {
-		if (e) e.preventDefault();
+		if (e)
+			e.preventDefault();
 		const verificationCode = code.join("");
 		try {
 			await verifyEmail(verificationCode);
