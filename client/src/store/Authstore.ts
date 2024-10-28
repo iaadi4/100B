@@ -89,6 +89,8 @@ export const useUserStore = create<UserState>()(
         } catch (error: any) {
           toast.error(error.response.data.message);
           set({ loading: false });
+        }finally {
+          set({ loading: false });
         }
       },
       checkAuthentication: async () => {
@@ -100,6 +102,8 @@ export const useUserStore = create<UserState>()(
           }
         } catch (error: any) {
           set({ isAuthenticated: false, isCheckingAuth: false });
+        }finally {
+          set({ isCheckingAuth: false });
         }
       },
       logout: async () => {
@@ -113,6 +117,8 @@ export const useUserStore = create<UserState>()(
         } catch (error: any) {
           toast.error(error.response.data.message);
           set({ loading: false });
+        }finally {
+          set({ loading: false });
         }
       },
       forgotPassword: async (email: string) => {
@@ -121,11 +127,14 @@ export const useUserStore = create<UserState>()(
           const response = await axios.post(`${API_END_POINT}/forgot-password`, { email });
           if (response.data.success) {
             toast.success(response.data.message);
-            set({ loading: false });
           }
+          
         } catch (error: any) {
           toast.error(error.response.data.message);
           set({ loading: false });
+        }finally{
+          set({ loading: false });
+
         }
       },
 
