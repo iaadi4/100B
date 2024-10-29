@@ -8,14 +8,31 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
   name         String
   password     String
   year         String
   branch       String
   refreshToken String?
-  role         Role[]  @default([STUDENT])
+  role         Role[]    @default([STUDENT])
+  notes        Note[]    @relation("UserNotes")
+}
+
+model Note {
+  id          Int       @id @default(autoincrement())
+  title       String
+  s3Url       String
+  subject     String
+  year        String
+  branch      String
+  createdBy   User      @relation("UserNotes", fields: [userId], references: [id])
+  userId      Int
+  upvotes     Int       @default(0)
+  downvotes   Int       @default(0)
+  isReported  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum Role {
