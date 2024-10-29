@@ -34,7 +34,6 @@ const Signup = () => {
     }
     try {
       await signup(input);
-      navigate("/verify-email");
     } catch (error) {
       console.log(error);
     }
@@ -80,7 +79,7 @@ const Signup = () => {
             <Input
               type="text"
               placeholder="Branch"
-              name="contact"
+              name="branch"
               value={input.branch}
               onChange={changeEventHandler}
               className="pl-10 focus-visible:ring-1"
@@ -94,7 +93,7 @@ const Signup = () => {
             <Input
               type="text"
               placeholder="Year"
-              name="Year"
+              name="year"
               value={input.year}
               onChange={changeEventHandler}
               className="pl-10 focus-visible:ring-1"

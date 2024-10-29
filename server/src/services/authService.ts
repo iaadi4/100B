@@ -23,6 +23,7 @@ class AuthService {
         try {
             const salt = bcrypt.genSaltSync(10);
             const encryptedPassword = await bcrypt.hashSync(password, salt);
+            console.log("{email, name, password, year, branch}",email, name, password, year, branch)
             const response = await prisma.user.create({
                 data: {
                     email,
@@ -34,7 +35,7 @@ class AuthService {
             })
             return response;
         } catch (error) {
-            console.log('Something went wrong in the service layer');
+            console.log(error,'Something went wrong in the service layer');
             throw error;
         }
     }

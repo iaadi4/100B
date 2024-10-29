@@ -4,7 +4,7 @@ import axios from "axios";
 import { LoginInputState, SignupInputState } from "@/schema/userSchema";
 import { toast } from "sonner";
 
-const API_END_POINT = "http://localhost:3000/api/v1/user";
+const API_END_POINT = "/api/v1";
 axios.defaults.withCredentials = true;
 
 type User = {
@@ -39,11 +39,14 @@ export const useUserStore = create<UserState>()(
       signup: async (input: SignupInputState) => {
         try {
           set({ loading: true });
+          console.log("set loading to true")
           const response = await axios.post(`${API_END_POINT}/signup`, input, {
             headers: {
               'Content-Type': 'application/json',
             },
           });
+          console.log("resposne ",response)
+
           if (response.data.success) {
             toast.success(response.data.message);
             set({ loading: false, user: response.data.user, isAuthenticated: true });
@@ -51,6 +54,8 @@ export const useUserStore = create<UserState>()(
           }
         } catch (error: any) {
           toast.error(error.response.data.message);
+          set({ loading: false });
+        }finally{
           set({ loading: false });
         }
       },
@@ -72,6 +77,8 @@ export const useUserStore = create<UserState>()(
         } catch (error: any) {
           toast.error(error.response.data.message);
           set({ loading: false });
+        }finally{
+          set({ loading: false });
         }
       },
       verifyEmail: async (verificationCode: string) => {
@@ -80,6 +87,8 @@ export const useUserStore = create<UserState>()(
           const response = await axios.post(`${API_END_POINT}/verify-email`, { verificationCode }, {
             headers: {
               'Content-Type': 'application/json',
+              withCredentials: true
+
             },
           });
           if (response.data.success) {
