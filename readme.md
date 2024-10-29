@@ -90,7 +90,7 @@ This platform streamlines academic resource sharing, real-time communication, an
 - **Creation**: Both students and teachers can create surveys/polls.
 - **Voting Options**: Voting can be anonymous.
 - **Decentralization**: Optional Web3 support for decentralized polls.
-- **Time-Limited Access**: Polls and surveys can have specified time frames.
+- **Time-Limited Access**: Polls and surveys can have specified time frames which can be extended and closed.
 - **Historical Records**: View past polls/surveys.
 
 ---
