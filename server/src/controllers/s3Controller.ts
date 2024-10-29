@@ -24,4 +24,21 @@ const upload = async (req: Request, res: Response) => {
     }
 }
 
-export default upload;
+const remove = async (req: Request, res: Response) => {
+    try {
+        await s3service.remove(req.body.filename);
+        return res.status(statusCode.SUCCESS).json({
+            message: 'File deleted'
+        })
+    } catch (error) {
+        console.log("Something went wrong in the controller layer");
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: 'Failed to delete file'
+        })
+    }
+}
+
+export {
+    upload,
+    remove
+}

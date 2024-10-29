@@ -3,7 +3,7 @@ import multer, { MulterError, FileFilterCallback } from "multer";
 import authController from "../../controllers/authController";
 import handleRefreshToken from "../../controllers/refreshTokenController";
 import handleLogout from "../../controllers/logoutController";
-import upload from "../../controllers/s3Controller";
+import { upload, remove} from "../../controllers/s3Controller";
 import { verifyJwt } from "../../middlewares/verifyJwt";
 
 const { signup, login } = authController;
@@ -37,6 +37,7 @@ router.post('/login', login);
 router.get('/refresh', handleRefreshToken);
 router.get('/logout', handleLogout);
 router.post('/upload', verifyJwt, uploadHandle.single('file'), upload);
+router.post('/delete-file', verifyJwt, remove);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {
