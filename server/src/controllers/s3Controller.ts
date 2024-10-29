@@ -38,7 +38,7 @@ const remove = async (req: Request, res: Response) => {
     }
 }
 
-export {
+export default {
     upload,
     remove
 }

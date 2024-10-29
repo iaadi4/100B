@@ -8,31 +8,57 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
   name         String
   password     String
   year         String
   branch       String
   refreshToken String?
-  role         Role[]    @default([STUDENT])
-  notes        Note[]    @relation("UserNotes")
+  role         Role[]  @default([STUDENT])
+  notes        Note[]  @relation("UserNotes")
+  polls        Poll[]  @relation("UserPoll")
+  votes        Vote[]  @relation("UserVote")
 }
 
 model Note {
-  id          Int       @id @default(autoincrement())
-  title       String
-  s3Url       String
-  subject     String
-  year        String
-  branch      String
-  createdBy   User      @relation("UserNotes", fields: [userId], references: [id])
-  userId      Int
-  upvotes     Int       @default(0)
-  downvotes   Int       @default(0)
-  isReported  Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         Int      @id @default(autoincrement())
+  title      String
+  s3Url      String
+  subject    String
+  year       String
+  branch     String
+  createdBy  User     @relation("UserNotes", fields: [userId], references: [id])
+  userId     Int
+  upvotes    Int      @default(0)
+  downvotes  Int      @default(0)
+  isReported Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Poll {
+  id        Int       @id @default(autoincrement())
+  title     String
+  year      String?
+  branch    String?
+  options   String[]
+  createdBy User      @relation("UserPoll", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime  @default(now())
+  closesAt  DateTime?
+  votes     Vote[]    @relation("PollVote")
+}
+
+model Vote {
+  id     Int    @id @default(autoincrement())
+  option String
+  user   User   @relation("UserVote", fields: [userId], references: [id])
+  poll   Poll   @relation("PollVote", fields: [pollId], references: [id])
+  userId Int
+  pollId Int
+
+  @@unique([userId, pollId])
 }
 
 enum Role {

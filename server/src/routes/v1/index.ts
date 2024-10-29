@@ -3,10 +3,9 @@ import multer, { MulterError, FileFilterCallback } from "multer";
 import authController from "../../controllers/authController";
 import handleRefreshToken from "../../controllers/refreshTokenController";
 import handleLogout from "../../controllers/logoutController";
-import { upload, remove} from "../../controllers/s3Controller";
+import s3Controller from "../../controllers/s3Controller";
+import pollController from "../../controllers/pollController";
 import { verifyJwt } from "../../middlewares/verifyJwt";
-
-const { signup, login } = authController;
 
 enum statusCode {
     NOT_FOUND = 404,
@@ -32,12 +31,16 @@ const uploadHandle = multer({
     limits: { fileSize: 50000000, files: 1}
 })
 
-router.post('/signup', signup);
-router.post('/login', login);
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 router.get('/refresh', handleRefreshToken);
 router.get('/logout', handleLogout);
-router.post('/upload', verifyJwt, uploadHandle.single('file'), upload);
-router.post('/delete-file', verifyJwt, remove);
+router.post('/upload', verifyJwt, uploadHandle.single('file'), s3Controller.upload);
+router.post('/delete-file', verifyJwt, s3Controller.remove);
+router.post('/poll', verifyJwt, pollController.create);
+router.delete('/poll', verifyJwt, pollController.remove);
+router.patch('/close-poll', verifyJwt, pollController.closePoll);
+router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {
