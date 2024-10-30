@@ -1,14 +1,8 @@
 import { Request, Response } from "express";
 import VoteService from "../services/voteService";
+import statusCode from "../utils/statuscode";
 
 const voteService = new VoteService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const vote = async (req: Request, res: Response) => {
     try {

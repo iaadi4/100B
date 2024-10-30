@@ -1,14 +1,8 @@
 import { Request, Response } from "express";
 import s3Service from "../services/s3Service";
+import statusCode from "../utils/statuscode";
 
 const s3service = new s3Service();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const upload = async (req: Request, res: Response) => {
     try {

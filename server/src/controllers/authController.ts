@@ -1,14 +1,8 @@
 import AuthService from "../services/authService";
 import { Request, Response} from "express";
+import statusCode from "../utils/statuscode";
 
 const authService = new AuthService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const signup = async (req: Request, res: Response) => {
     try {

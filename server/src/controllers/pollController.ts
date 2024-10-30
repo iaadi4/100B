@@ -1,14 +1,8 @@
 import PollService from "../services/pollService";
 import { Request, Response } from "express";
+import statusCode from "../utils/statuscode";
 
 const pollService = new PollService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const create = async (req: Request, res: Response) => {
     try {

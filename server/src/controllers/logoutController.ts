@@ -1,15 +1,8 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import statusCode from "../utils/statuscode";
 
 const prisma = new PrismaClient();
-
-enum statusCode {
-    SUCCESS = 200,
-    SUCCESS_NO_CONTENT = 204,
-    FORBIDDEN = 403,
-    UNAUTHORIZED = 401,
-    NOTFOUND = 404
-}
 
 // on client, also delete accesssToken
 const handleLogout = async (req: Request, res: Response) => {

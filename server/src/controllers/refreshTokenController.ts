@@ -1,17 +1,12 @@
 import jwt from "jsonwebtoken"
 import config from "../config/serverConfig";
+import statusCode from "../utils/statuscode";
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = config;
 
-enum statusCode {
-    SUCCESS = 200,
-    FORBIDDEN = 403,
-    UNAUTHORIZED = 401,
-    NOTFOUND = 404
-}
 
 const handleRefreshToken = async (req: Request, res: Response) => {
     const cookies = req.cookies;
@@ -28,7 +23,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
         }
     });
     if(!user) {
-        return res.status(statusCode.NOTFOUND).json({
+        return res.status(statusCode.NOT_FOUND).json({
             SUCCESS: false,
             message: 'User not found'
         });

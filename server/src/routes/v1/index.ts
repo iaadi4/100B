@@ -7,13 +7,8 @@ import s3Controller from "../../controllers/s3Controller";
 import pollController from "../../controllers/pollController";
 import voteController from "../../controllers/voteController";
 import userController from "../../controllers/userController";
+import statusCode from "../../utils/statuscode";
 import { verifyJwt } from "../../middlewares/verifyJwt";
-
-enum statusCode {
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const router: any = express.Router();
 const storage = multer.memoryStorage();

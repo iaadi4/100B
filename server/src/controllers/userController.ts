@@ -1,14 +1,8 @@
 import { Request, Response } from "express";
 import UserService from "../services/userService";
+import statusCode from "../utils/statuscode";
 
 const userService = new UserService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const update = async(req: Request, res: Response) => {
     try {
