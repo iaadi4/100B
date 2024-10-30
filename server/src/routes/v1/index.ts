@@ -5,6 +5,7 @@ import handleRefreshToken from "../../controllers/refreshTokenController";
 import handleLogout from "../../controllers/logoutController";
 import s3Controller from "../../controllers/s3Controller";
 import pollController from "../../controllers/pollController";
+import voteController from "../../controllers/voteController";
 import { verifyJwt } from "../../middlewares/verifyJwt";
 
 enum statusCode {
@@ -41,6 +42,7 @@ router.post('/poll', verifyJwt, pollController.create);
 router.delete('/poll', verifyJwt, pollController.remove);
 router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
+router.post('/vote', verifyJwt, voteController.vote);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {
