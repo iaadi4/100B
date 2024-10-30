@@ -13,7 +13,7 @@ enum statusCode {
 const signup = async (req: Request, res: Response) => {
     try {
         const response = await authService.signup(req.body);
-        return res.status(statusCode.SUCCESS).json(response);
+        return res.status(statusCode.SUCCESS).json({response});
     } catch (error) {
         console.log('Something went wrong in the controller layer');
         return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to signup"});
