@@ -7,6 +7,11 @@ const authService = new AuthService();
 const signup = async (req: Request, res: Response) => {
     try {
         const response = await authService.signup(req.body);
+        if(response == 400) {
+            return res.status(statusCode.BAD_REQUEST).json({
+                message: "Invalid email"
+            })
+        }
         return res.status(statusCode.SUCCESS).json({response});
     } catch (error) {
         console.log('Something went wrong in the controller layer');
