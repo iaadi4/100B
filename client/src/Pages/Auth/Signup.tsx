@@ -34,6 +34,7 @@ const Signup = () => {
     }
     try {
       await signup(input);
+      navigate("/verify-email");
     } catch (error) {
       console.log(error);
     }

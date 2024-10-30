@@ -27,6 +27,7 @@ type UserState = {
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   updateProfile: (input: any) => Promise<void>;
+  resetPassword: (token:string, newPassword:string) => Promise<void>; 
 };
 
 export const useUserStore = create<UserState>()(
@@ -162,6 +163,23 @@ export const useUserStore = create<UserState>()(
           toast.error(error.response.data.message);
         }
       },
+
+      resetPassword: async (newpassword: string, token: string) => {
+        try {
+          const response = await axios.put(`${API_END_POINT}/reset-password`, { newpassword, token }, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (response.data.success) {
+            toast.success(response.data.message);
+          }
+        } catch (error: any) {
+          toast.error(error.response.data.message);
+        }finally{
+          set({ loading: false });
+        }
+      }
     }),
     {
       name: 'user',
