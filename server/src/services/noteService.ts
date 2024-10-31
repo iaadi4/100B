@@ -22,7 +22,7 @@ const s3Client = new S3Client({
     },
 });
 
-class s3Service {
+class NoteService {
     async upload(file: any, userId: number, {title, subject, year, branch}: notesData) {   
         try {
             const result = await uploadFile(file);
@@ -61,4 +61,4 @@ class s3Service {
     }
 }
 
-export default s3Service;
+export default NoteService;

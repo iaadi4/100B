@@ -3,10 +3,11 @@ import multer, { MulterError, FileFilterCallback } from "multer";
 import authController from "../../controllers/authController";
 import handleRefreshToken from "../../controllers/refreshTokenController";
 import handleLogout from "../../controllers/logoutController";
-import s3Controller from "../../controllers/s3Controller";
+import noteController from "../../controllers/noteController";
 import pollController from "../../controllers/pollController";
 import voteController from "../../controllers/voteController";
 import userController from "../../controllers/userController";
+import announcementController from "../../controllers/announcementController";
 import statusCode from "../../utils/statuscode";
 import { verifyJwt } from "../../middlewares/verifyJwt";
 
@@ -32,14 +33,17 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.get('/refresh', handleRefreshToken);
 router.get('/logout', handleLogout);
-router.post('/upload', verifyJwt, uploadHandle.single('file'), s3Controller.upload);
-router.post('/delete-file', verifyJwt, s3Controller.remove);
+router.post('/upload', verifyJwt, uploadHandle.single('file'), noteController.upload);
+router.post('/delete-file', verifyJwt, noteController.remove);
 router.post('/poll', verifyJwt, pollController.create);
 router.delete('/poll', verifyJwt, pollController.remove);
 router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
+router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
+router.patch('/announcement', verifyJwt, announcementController.update);
+router.delete('/announcement', verifyJwt, announcementController.remove);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {

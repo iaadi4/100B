@@ -12,7 +12,6 @@ const handleRefreshToken = async (req: Request, res: Response) => {
     const cookies = req.cookies;
     if(!cookies?.jwt) {
         return res.status(statusCode.UNAUTHORIZED).json({
-            SUCCESS: false,
             message: 'Unauthorized access'
         });
     }
@@ -24,7 +23,6 @@ const handleRefreshToken = async (req: Request, res: Response) => {
     });
     if(!user) {
         return res.status(statusCode.NOT_FOUND).json({
-            SUCCESS: false,
             message: 'User not found'
         });
     }
@@ -34,7 +32,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
         (err: any, decoded: any) => {
             if(err || user.id != decoded.id) {
                 return res.status(statusCode.FORBIDDEN).json({
-                    SUCCESS: false,
+                    message: "Failed to create token",
                     error: err
                 });
             }

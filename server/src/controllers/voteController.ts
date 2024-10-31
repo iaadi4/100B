@@ -11,9 +11,9 @@ const vote = async (req: Request, res: Response) => {
             response
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
         return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to vote"
+            message: "Failed to vote",
+            error: error
         })
     }
 }
