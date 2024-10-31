@@ -1,14 +1,8 @@
 import { Request, Response } from "express";
 import VoteService from "../services/voteService";
+import statusCode from "../utils/statuscode";
 
 const voteService = new VoteService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const vote = async (req: Request, res: Response) => {
     try {
@@ -17,9 +11,9 @@ const vote = async (req: Request, res: Response) => {
             response
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
         return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to vote"
+            message: "Failed to vote",
+            error: error
         })
     }
 }

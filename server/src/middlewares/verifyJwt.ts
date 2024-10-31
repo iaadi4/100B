@@ -1,13 +1,9 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import config from "../config/serverConfig";
+import statusCode from "../utils/statuscode";
 
 const { ACCESS_TOKEN_SECRET } = config;
-
-enum statusCode {
-    FORBIDDEN = 403,
-    UNAUTHORIZED = 401
-}
 
 export const verifyJwt = (req: Request, res: Response, next: NextFunction): void | Response => {
     const authHeader = req.headers['authorization'];

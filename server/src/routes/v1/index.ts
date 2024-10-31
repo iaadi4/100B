@@ -3,17 +3,15 @@ import multer, { MulterError, FileFilterCallback } from "multer";
 import authController from "../../controllers/authController";
 import handleRefreshToken from "../../controllers/refreshTokenController";
 import handleLogout from "../../controllers/logoutController";
-import s3Controller from "../../controllers/s3Controller";
+import noteController from "../../controllers/noteController";
 import pollController from "../../controllers/pollController";
 import voteController from "../../controllers/voteController";
 import userController from "../../controllers/userController";
+import announcementController from "../../controllers/announcementController";
+import messageController from "../../controllers/messageController";
+import conversationController from "../../controllers/conversationController";
+import statusCode from "../../utils/statuscode";
 import { verifyJwt } from "../../middlewares/verifyJwt";
-
-enum statusCode {
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const router: any = express.Router();
 const storage = multer.memoryStorage();
@@ -37,14 +35,19 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.get('/refresh', handleRefreshToken);
 router.get('/logout', handleLogout);
-router.post('/upload', verifyJwt, uploadHandle.single('file'), s3Controller.upload);
-router.post('/delete-file', verifyJwt, s3Controller.remove);
+router.post('/upload', verifyJwt, uploadHandle.single('file'), noteController.upload);
+router.post('/delete-file', verifyJwt, noteController.remove);
 router.post('/poll', verifyJwt, pollController.create);
 router.delete('/poll', verifyJwt, pollController.remove);
 router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
+router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
+router.patch('/announcement', verifyJwt, announcementController.update);
+router.delete('/announcement', verifyJwt, announcementController.remove);
+router.post('/message', verifyJwt, messageController.create);
+router.get('/conversation', verifyJwt, conversationController.getWithMessage);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {

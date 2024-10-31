@@ -1,14 +1,8 @@
 import PollService from "../services/pollService";
 import { Request, Response } from "express";
+import statusCode from "../utils/statuscode";
 
 const pollService = new PollService();
-
-enum statusCode {
-    SUCCESS = 200,
-    NOT_FOUND = 404,
-    BAD_REQUEST = 400,
-    INTERNAL_ERROR = 500
-}
 
 const create = async (req: Request, res: Response) => {
     try {
@@ -17,8 +11,10 @@ const create = async (req: Request, res: Response) => {
             response
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
-        return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to create poll"});
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to create poll",
+            error: error
+        });
     }
 }
 
@@ -29,8 +25,10 @@ const remove = async (req: Request, res: Response) => {
             message: "Poll removed"
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
-        return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to delete poll"});
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to delete poll",
+            error: error
+        });
     }
 }
 
@@ -41,8 +39,10 @@ const closePoll = async (req: Request, res: Response) => {
             message: "Poll closed"
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
-        return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to close poll"});
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to close poll",
+            error: error
+        });
     }
 }
 
@@ -53,8 +53,10 @@ const extendPoll = async (req: Request, res: Response) => {
             message: "Poll closed"
         })
     } catch (error) {
-        console.log('Something went wrong in the controller layer');
-        return res.status(statusCode.INTERNAL_ERROR).json({error: "Failed to close poll"});
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to close poll",
+            error: error
+        });
     }
 }
 

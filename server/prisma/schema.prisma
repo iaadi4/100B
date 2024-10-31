@@ -8,17 +8,24 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
-  name         String
-  password     String
-  year         String
-  branch       String
-  refreshToken String?
-  role         Role[]  @default([STUDENT])
-  notes        Note[]  @relation("UserNotes")
-  polls        Poll[]  @relation("UserPoll")
-  votes        Vote[]  @relation("UserVote")
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  name             String
+  password         String
+  year             String
+  branch           String
+  refreshToken     String?
+  createdAt        DateTime       @default(now())
+  role             Role[]         @default([STUDENT])
+  notes            Note[]         @relation("UserNotes")
+  polls            Poll[]         @relation("UserPoll")
+  votes            Vote[]         @relation("UserVote")
+  announcement     Announcement[] @relation("UserAnnouncement")
+  messagesSent     Message[]      @relation("UserSentMessage")
+  messagesReceived Message[]      @relation("UserReceivedMessage")
+  conversations    Conversation[]
+  contacts         User[]         @relation("UserFriends")
+  contactsOf       User[]         @relation("UserFriends")
 }
 
 model Note {
@@ -59,6 +66,36 @@ model Vote {
   pollId Int
 
   @@unique([userId, pollId])
+}
+
+model Announcement {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String?
+  attachment String?
+  createdAt  DateTime @default(now())
+  createdBy  User     @relation("UserAnnouncement", fields: [userId], references: [id])
+  userId     Int
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  sender         User         @relation("UserSentMessage", fields: [senderId], references: [id])
+  receiver       User         @relation("UserReceivedMessage", fields: [receiverId], references: [id])
+  senderId       Int
+  receiverId     Int
+  conversation   Conversation @relation("MessageConversation", fields: [conversationId], references: [id])
+  conversationId Int
+}
+
+model Conversation {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  participants User[]
+  messages     Message[] @relation("MessageConversation")
 }
 
 enum Role {

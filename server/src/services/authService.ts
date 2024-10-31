@@ -22,6 +22,10 @@ class AuthService {
 
     async signup({email, name, password, year, branch, role}: signupData) {
         try {
+            const isCollegeEmail = email.split('@')[1].split('.')[0];
+            if(isCollegeEmail != 'iiitranchi') {
+                return 400;
+            }
             const salt = bcrypt.genSaltSync(10);
             const encryptedPassword = await bcrypt.hashSync(password, salt);
             const enumRole = role == "STUDENT" ? Role.STUDENT : Role.TEACHER;
