@@ -6,7 +6,6 @@ const announcementService = new AnnouncementService();
 
 const create = async (req: Request, res: Response) => {
     try {
-        console.log(req.body);
         const response = await announcementService.create(req.file, req.body, req.user.id);
         return res.status(statusCode.SUCCESS).json({
             response
