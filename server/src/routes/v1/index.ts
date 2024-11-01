@@ -46,7 +46,8 @@ router.patch('/user', verifyJwt, userController.update);
 router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
 router.patch('/announcement', verifyJwt, announcementController.update);
 router.delete('/announcement', verifyJwt, announcementController.remove);
-router.post('/message', verifyJwt, messageController.create);
+router.post('/message', verifyJwt, messageController.send);
+router.get('/message', verifyJwt, messageController.getMessages);
 router.get('/conversation', verifyJwt, conversationController.getWithMessage);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {

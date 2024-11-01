@@ -10,7 +10,7 @@ interface messageData {
 }
 
 class MessageService {
-    async create(data: messageData) {
+    async sendMessage(data: messageData) {
         try {
             let conversationId = data.conversationId;
             const { senderId, receiverId } = data;
@@ -39,7 +39,7 @@ class MessageService {
                 }
                 conversationId = String(conversation.id);
             }
-            const response = await prisma.message.create({
+            const message = await prisma.message.create({
                 data: {
                     senderId: parseInt(data.senderId),
                     receiverId: parseInt(data.receiverId),
@@ -47,7 +47,30 @@ class MessageService {
                     conversationId: parseInt(conversationId)
                 }
             })
-            return response;
+            return message;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
+
+    async getMessage(senderId: number, receiverId: string) {
+        try {
+            const conversation = await prisma.conversation.findFirst({
+                where: {
+                    participants: {
+                        some: {
+                            id: { in: [senderId, parseInt(receiverId)]}
+                        }
+                    }
+                },
+                include: {
+                    messages: true
+                }
+            })
+            if(!conversation)
+                return [];
+            return conversation.messages;
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;

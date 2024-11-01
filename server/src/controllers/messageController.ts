@@ -4,9 +4,9 @@ import statusCode from "../utils/statuscode";
 
 const messageService = new MessageService();
 
-const create = async (req: Request, res: Response) => {
+const send = async (req: Request, res: Response) => {
     try {
-        const response = await messageService.create({...req.body, senderId: req.user.id});
+        const response = await messageService.sendMessage({...req.body, senderId: req.user.id});
         return res.status(statusCode.SUCCESS).json({response});
     } catch (error) {
         return res.status(statusCode.INTERNAL_ERROR).json({
@@ -16,6 +16,19 @@ const create = async (req: Request, res: Response) => {
     }
 }
 
+const getMessages = async (req: Request, res: Response) => {
+    try {
+        const response = await messageService.getMessage(req.user.id, req.body.receiverId);
+        return res.status(statusCode.SUCCESS).json({response});
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch message",
+            error: error
+        })
+    }
+}
+
 export default {
-    create
+    send,
+    getMessages
 }
