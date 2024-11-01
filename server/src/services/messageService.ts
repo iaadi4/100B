@@ -76,6 +76,20 @@ class MessageService {
             throw error;
         }
     }
+
+    async remove(messageId: string) {
+        try {
+            await prisma.message.delete({
+                where: {
+                    id: parseInt(messageId)
+                }
+            })
+            return true;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
 }
 
 export default MessageService;

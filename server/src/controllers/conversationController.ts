@@ -16,6 +16,21 @@ const getWithMessage = async (req: Request, res: Response) => {
     }
 }
 
+const deleteConversation = async (req: Request, res: Response) => {
+    try {
+        await conversationService.remove(req.body.conversationId);
+        return res.status(statusCode.SUCCESS).json({
+            message: "Conversation deleted successfully"
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to delete conversation",
+            error: error
+        })
+    }
+}
+
 export default {
-    getWithMessage
+    getWithMessage,
+    deleteConversation
 }

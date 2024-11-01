@@ -28,7 +28,22 @@ const getMessages = async (req: Request, res: Response) => {
     }
 }
 
+const remove = async(req: Request, res: Response) => {
+    try {
+        await messageService.remove(req.body.messageId);
+        return res.status(statusCode.SUCCESS).json({
+            message: "message deleted"
+        });
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch message",
+            error: error
+        })
+    }
+}
+
 export default {
     send,
-    getMessages
+    getMessages,
+    remove
 }
