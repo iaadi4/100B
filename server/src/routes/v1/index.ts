@@ -10,6 +10,7 @@ import userController from "../../controllers/userController";
 import announcementController from "../../controllers/announcementController";
 import messageController from "../../controllers/messageController";
 import conversationController from "../../controllers/conversationController";
+import confessionController from "../../controllers/confessionController";
 import statusCode from "../../utils/statuscode";
 import { verifyJwt } from "../../middlewares/verifyJwt";
 
@@ -49,6 +50,9 @@ router.delete('/announcement', verifyJwt, announcementController.remove);
 router.post('/message', verifyJwt, messageController.send);
 router.get('/message', verifyJwt, messageController.getMessages);
 router.get('/conversation', verifyJwt, conversationController.getWithMessage);
+router.post('/confession', verifyJwt, confessionController.create);
+router.delete('/confession', verifyJwt, confessionController.remove);
+router.get('/confession', verifyJwt, confessionController.getAll);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {

@@ -16,6 +16,7 @@ model User {
   branch           String
   refreshToken     String?
   createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   role             Role[]         @default([STUDENT])
   notes            Note[]         @relation("UserNotes")
   polls            Poll[]         @relation("UserPoll")
@@ -26,6 +27,7 @@ model User {
   conversations    Conversation[]
   contacts         User[]         @relation("UserFriends")
   contactsOf       User[]         @relation("UserFriends")
+  confessions      Confession[]   @relation("UserConfessions")
 }
 
 model Note {
@@ -53,6 +55,7 @@ model Poll {
   createdBy User      @relation("UserPoll", fields: [userId], references: [id])
   userId    Int
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   closesAt  DateTime?
   votes     Vote[]    @relation("PollVote")
 }
@@ -96,6 +99,15 @@ model Conversation {
   createdAt    DateTime  @default(now())
   participants User[]
   messages     Message[] @relation("MessageConversation")
+}
+
+model Confession {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation("UserConfessions", fields: [userId], references: [id])
+  userId    Int
 }
 
 enum Role {
