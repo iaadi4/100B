@@ -17,6 +17,28 @@ class UserService {
             throw error;
         }
     }
+
+    async getAll(userId: number) {
+        try {
+            const response = await prisma.user.findMany({
+                where: {
+                    id: {
+                        not: userId
+                    }
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    year: true
+                }
+            })
+            return response;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
 }
 
 export default UserService;

@@ -21,6 +21,19 @@ const update = async(req: Request, res: Response) => {
     }
 }
 
+const getAll = async (req: Request, res: Response) => {
+    try {
+        const response = await userService.getAll(req.user.id);
+        return res.status(statusCode.SUCCESS).json({response});
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to get users",
+            error: error
+        })
+    }
+}
+
 export default {
-    update
+    update,
+    getAll
 }
