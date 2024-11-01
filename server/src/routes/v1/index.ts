@@ -44,6 +44,7 @@ router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
+router.get('/user', verifyJwt, userController.getAll);
 router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
 router.patch('/announcement', verifyJwt, announcementController.update);
 router.delete('/announcement', verifyJwt, announcementController.remove);
