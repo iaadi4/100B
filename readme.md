@@ -18,18 +18,19 @@ This platform streamlines academic resource sharing, real-time communication, an
   - [Frontend](#frontend)
   - [Backend](#backend)
   - [DevOps](#devops)
+- [Team Members](#team-members)
 
 ---
 
 ### Registration
 
-- **Authentication**: 
+- **Authentication**:
   - **Email Signup**: Uses JWT for authentication; tokens are stored in HTTP-only cookies (access and refresh tokens).
   - **Google Signup**: Uses Firebase for OAuth with Google.
 - **Email Verification**:
   - **College Email Requirement**: Users can only sign up using verified college emails (currently IIIT Ranchi).
   - **Two Roles**: Teacher and Student.
-- **User Information**: 
+- **User Information**:
   - Required fields: email, password, college (IIIT Ranchi), batch, year, branch, and optional profile picture.
   - **OTP Verification**: OTP sent to email; account creation is finalized upon OTP verification.
 - **Profile Picture**: Uploaded to Amazon S3.
@@ -47,7 +48,7 @@ This platform streamlines academic resource sharing, real-time communication, an
 ### Notes
 
 - **Storage**: Notes are stored on Amazon S3 (using multer for uploads).
-- **Organization**: 
+- **Organization**:
   - Files can be uploaded directly or within folders.
   - Folders require subject, year, batch, and branch information.
   - Folders can be updated to add new files or remove existing ones.
@@ -68,7 +69,7 @@ This platform streamlines academic resource sharing, real-time communication, an
 
 ### Anonymous Messages
 
-- **Message Features**: 
+- **Message Features**:
   - Anonymous users within the same college can send and read messages.
   - Emoji reactions supported.
   - Messages can be reported for review (ML-based moderation).
@@ -128,3 +129,12 @@ This platform streamlines academic resource sharing, real-time communication, an
 - **Aiven.io** (managed PostgreSQL)
 
 ---
+
+## Team Members
+
+- **Aditya Singh** - Full Stack
+- **Suraj Sharma** - Frontend
+- **Nilkamal Priyadarshi** - UI/UX
+- **Kumar Abhishek Ranjan** - ML/DL
+
+## Figma - https://www.figma.com/design/H3Gklrrn27SuGiwaFmHKtg/InterlayProject?node-id=1-3&t=4GAvPEbr5AeN3a3s-1

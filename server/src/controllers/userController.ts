@@ -27,7 +27,7 @@ const getAll = async (req: Request, res: Response) => {
         return res.status(statusCode.SUCCESS).json({response});
     } catch (error) {
         return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to update user details",
+            message: "Failed to get users",
             error: error
         })
     }

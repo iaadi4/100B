@@ -41,7 +41,7 @@ class AuthService {
             })
             return response;
         } catch (error) {
-            console.log('Something went wrong in the service layer');
+            console.log(error,'Something went wrong in the service layer');
             throw error;
         }
     }
