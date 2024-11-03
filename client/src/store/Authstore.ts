@@ -135,6 +135,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       forgotPassword: async (email: string) => {
         try {
           set({ loading: true });
@@ -185,7 +186,7 @@ export const useUserStore = create<UserState>()(
       }
     }),
     {
-      name: 'user',
+      name: 'agora-user',
       storage: createJSONStorage(() => localStorage),
     }
   )
