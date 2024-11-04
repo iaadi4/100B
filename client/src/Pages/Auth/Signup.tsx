@@ -1,3 +1,4 @@
+import axios from "../../api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -5,6 +6,7 @@ import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
 import { Book, Calendar1Icon, Loader2, LockKeyhole, Mail, User } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 
 const Signup = () => {
@@ -26,7 +28,7 @@ const Signup = () => {
     setInput({ ...input, [name]: value });
   }
 
-  const loginSubmitHandler = async (e: FormEvent) => {
+  const signupSubmitHandler = async (e: FormEvent) => {
     e.preventDefault();
     const result = userSignupSchema.safeParse(input);
     if (!result.success) {
@@ -35,15 +37,32 @@ const Signup = () => {
       return;
     }
     try {
-      navigate("/verify-email");
-    } catch (error) {
-      console.log(error);
+      setLoading(true);
+      const { name, email, password, year, branch } = input;
+      const response = await axios.post('/api/v1/signup', {
+        email,
+        password,
+        name,
+        branch,
+        year
+      })
+      console.log(response);
+      setInput({ name: '', email: '', password: '', year: '', branch: '' });
+      navigate("/verify-email", { state: { ...response.data.user } });
+    } catch (error: any) {
+      if (error.response.data.message)
+        toast.error(error.response.data.message);
+      else
+        toast.error('Failed to signup, please try again!');
+      console.log(error.response);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <form onSubmit={loginSubmitHandler} className="md:p-8 w-full max-w-md rounded-lg md:border border-gray-200 mx-4">
+      <form onSubmit={signupSubmitHandler} className="md:p-8 w-full max-w-md rounded-lg md:border border-gray-200 mx-4">
         <div className="mb-4">
           <h1 className="font-bold text-2xl">Agora</h1>
         </div>
@@ -117,7 +136,7 @@ const Signup = () => {
             {errors && <span className="text-xs text-red-500">{errors.password}</span>}
           </div>
         </div>
-        
+
         <Separator className="mb-2" />
         <div className="mb-10 w-full">
           {loading ? (

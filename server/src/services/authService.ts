@@ -28,7 +28,7 @@ class AuthService {
             }
             const salt = bcrypt.genSaltSync(10);
             const encryptedPassword = await bcrypt.hashSync(password, salt);
-            const enumRole = role == "STUDENT" ? Role.STUDENT : Role.TEACHER;
+            const enumRole = role == "TEACHER" ? Role.TEACHER : Role.STUDENT;
             const response = await prisma.user.create({
                 data: {
                     email,

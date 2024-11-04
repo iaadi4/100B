@@ -1,110 +1,121 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import axios from "../../api/axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const EmailVerificationPage = () => {
-	const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
-	const [loading, setLoding] = useState(false);
-	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-	
+	const [otp, setOtp] = useState(Array(6).fill(""));
+	const [isResending, setIsResending] = useState(false);
+	const [resendTimer, setResendTimer] = useState(60);
+	const [checkOtp, setCheckOtp] = useState('');
+
+	const location = useLocation();
 	const navigate = useNavigate();
-
-	const findLastIndexPolyfill = (array: string[], predicate: (value: string) => boolean): number => {
-		for (let i = array.length - 1; i >= 0; i--) {
-			if (predicate(array[i])) return i;
-		}
-		return -1;
-	};
-
-	const handleChange = (index: number, value: string) => {
-		const newCode = [...code];
-
-		if (value.length > 1) {
-			const pastedCode = value.slice(0, 6).split("");
-			for (let i = 0; i < 6; i++) {
-				newCode[i] = pastedCode[i] || "";
-			}
-			setCode(newCode);
-
-			const lastFilledIndex = findLastIndexPolyfill(newCode, (digit) => digit !== "");
-			const focusIndex = lastFilledIndex < 5 ? lastFilledIndex + 1 : 5;
-			inputRefs.current[focusIndex]?.focus();
-		} else {
-			newCode[index] = value;
-			setCode(newCode);
-
-			if (value && index < 5) {
-				inputRefs.current[index + 1]?.focus();
-			}
-		}
-	};
-
-	const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Backspace" && !code[index] && index > 0) {
-			inputRefs.current[index - 1]?.focus();
-		}
-	};
-
-	const handleSubmit = async (e?: React.FormEvent) => {
-		if (e)
-			e.preventDefault();
-		const verificationCode = code.join("");
-		try {
-			await verifyEmail(verificationCode);
-			navigate("/");
-			toast.success("Email verified successfully");
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	const data = location?.state;
 
 	useEffect(() => {
-		if (code.every((digit) => digit !== "")) {
-			handleSubmit();
+		if (!data) {
+			navigate("/signup");
+			toast.error("You must signup first");
 		}
-	}, [code]);
+	}, [data, navigate]);
+
+	const handleOtpChange = (value: any, index: number) => {
+		const newOtp = [...otp];
+		newOtp[index] = value;
+		setOtp(newOtp);
+
+		if (value && /^\d$/.test(value)) {
+			const nextInput = document.getElementById(`otp-${index + 1}`);
+			if (nextInput) nextInput.focus();
+		}
+	};
+
+	const handleKeyDown = (e, index: number) => {
+		if (e.key === "Backspace" && otp[index] === "") {
+			const prevInput = document.getElementById(`otp-${index - 1}`);
+			if (prevInput) prevInput.focus();
+		}
+	};
+
+	const handleResendOTP = async () => {
+		setIsResending(true);
+		setResendTimer(60);
+		try {
+			const response = await axios.post("/api/v1/verify-otp", { id: data.id, mailTo: data.email });
+			setCheckOtp(response.data.otp);
+			toast.success("OTP has been resent!");
+
+			const interval = setInterval(() => {
+				setResendTimer((prev) => {
+					if (prev === 1) {
+						clearInterval(interval);
+						setIsResending(false);
+					}
+					return prev - 1;
+				});
+			}, 1000);
+		} catch (error) {
+			console.error(error);
+			toast.error("Failed to resend OTP. Please try again.");
+			setIsResending(false);
+		}
+	};
+
+	const handleVerifyOTP = async () => {
+		const otpString = otp.join("");
+		if (checkOtp === otpString) {
+			toast.success('Email verified successfully');
+			navigate('/login');
+		} else {
+			toast.error('Wrong OTP');
+			await axios.delete('/api/v1/user', {
+				data: {
+					id: data.id
+				}
+			})
+			navigate('/signup');
+		}
+	};
 
 	return (
-		<div className='max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden'>
-			<motion.div
-				initial={{ opacity: 0, y: -50 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5 }}
-				className='bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md'
-			>
-				<h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text'>
-					Verify Your Email
-				</h2>
-				<p className='text-center text-gray-300 mb-6'>Enter the 6-digit code sent to your email address.</p>
+		<div className="h-screen w-screen flex flex-col items-center justify-center bg-white text-black">
+			<h2 className="text-2xl font-semibold mb-2">Verification Code</h2>
+			<p className="text-gray-600">Please type the verification code sent to your email.</p>
+			<p className="text-gray-600 mb-6">{data?.email}</p>
 
-				<form onSubmit={handleSubmit} className='space-y-6'>
-					<div className='flex justify-between'>
-						{code.map((digit, index) => (
-							<input
-								key={index}
-								ref={(el) => (inputRefs.current[index] = el)}
-								type='text'
-								maxLength={1}
-								value={digit}
-								onChange={(e) => handleChange(index, e.target.value)}
-								onKeyDown={(e) => handleKeyDown(index, e)}
-								className='w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-600 rounded-lg focus:border-green-500 focus:outline-none'
-							/>
-						))}
-					</div>
-					<motion.button
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						type='submit'
-						disabled={loading || code.some((digit) => !digit)}
-						className='w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50'
+			<div className="flex space-x-4">
+				{otp.map((digit, index) => (
+					<input
+						key={`otp-${index}`}
+						id={`otp-${index}`}
+						value={digit}
+						onChange={(e) => handleOtpChange(e.target.value, index)}
+						onKeyDown={(e) => handleKeyDown(e, index)}
+						className="w-12 h-12 bg-white border border-gray-300 text-black text-center text-xl font-mono outline-none focus:border-black transition-all duration-300"
+						maxLength={1}
+					/>
+				))}
+
+			</div>
+
+			<Button onClick={handleVerifyOTP} className="mt-8 w-32">
+				Verify
+			</Button>
+
+			<div className="mt-4">
+				{isResending ? (
+					<p className="text-gray-500">You can resend OTP in {resendTimer} seconds</p>
+				) : (
+					<button
+						onClick={handleResendOTP}
+						className="text-black underline hover:text-blue-900"
 					>
-						{loading ? "Verifying..." : "Verify Email"}
-					</motion.button>
-				</form>
-			</motion.div>
+						Resend OTP
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };

@@ -11,6 +11,7 @@ import announcementController from "../../controllers/announcementController";
 import messageController from "../../controllers/messageController";
 import conversationController from "../../controllers/conversationController";
 import confessionController from "../../controllers/confessionController";
+import emailController from "../../controllers/emailController";
 import statusCode from "../../utils/statuscode";
 import { verifyJwt } from "../../middlewares/verifyJwt";
 
@@ -45,6 +46,7 @@ router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
 router.get('/user', verifyJwt, userController.getAll);
+router.delete('/user', userController.remove);
 router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
 router.patch('/announcement', verifyJwt, announcementController.update);
 router.delete('/announcement', verifyJwt, announcementController.remove);
@@ -56,6 +58,7 @@ router.delete('/conversation', verifyJwt, conversationController.deleteConversat
 router.post('/confession', verifyJwt, confessionController.create);
 router.delete('/confession', verifyJwt, confessionController.remove);
 router.get('/confession', verifyJwt, confessionController.getAll);
+router.post('/verify-otp', emailController.generateOtp);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {

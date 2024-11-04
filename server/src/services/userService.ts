@@ -39,6 +39,20 @@ class UserService {
             throw error;
         }
     }
+
+    async remove(id: string) {
+        try {
+            await prisma.user.delete({
+                where: {
+                    id: parseInt(id)
+                }
+            })
+            return true;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
 }
 
 export default UserService;

@@ -13,7 +13,8 @@ const signup = async (req: Request, res: Response) => {
                 message: "Invalid email"
             })
         }
-        return res.status(statusCode.SUCCESS).json({response});
+        const { id, name, email, branch, year } = response;
+        return res.status(statusCode.SUCCESS).json({ success: true, user: { id, name, email, branch, year }});
     } catch (error) {
         return res.status(statusCode.INTERNAL_ERROR).json({
             success: false,
