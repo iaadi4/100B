@@ -17,6 +17,8 @@ model User {
   refreshToken     String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  otp              String?
+  otpExp           DateTime?
   role             Role[]         @default([STUDENT])
   notes            Note[]         @relation("UserNotes")
   polls            Poll[]         @relation("UserPoll")

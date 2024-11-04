@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUserStore } from "@/store/Authstore";
 import { Loader2, LockKeyholeIcon } from "lucide-react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
-  const { loading, resetPassword } = useUserStore();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
 
@@ -23,10 +23,10 @@ const ResetPassword = () => {
       return;
     }
     try {
-      await resetPassword(token, newPassword);
       alert('Password reset successfully');
       navigate('/login');
     } catch (error) {
+      console.log(error);
       alert('Failed to reset password');
     }
   };
