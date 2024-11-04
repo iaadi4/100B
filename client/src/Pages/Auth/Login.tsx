@@ -1,29 +1,33 @@
+import axios from "../../api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
-import { useUserStore } from "../../store/Authstore";
 import { Loader2, LockKeyhole, Mail } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { login } from "../../Redux/authSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
 
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<LoginInputState>>({});
   const [input, setInput] = useState<LoginInputState>({
     email: "",
     password: "",
   });
 
-  const [errors, setErrors] = useState<Partial<LoginInputState>>({});
-  const { loading, login } = useUserStore();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   };
 
-  const loginSubmitHandler = async (e: FormEvent) => {
+  const loginSubmitHandler = useCallback( async(e: FormEvent) => {
     e.preventDefault();
     const result = userLoginSchema.safeParse(input);
     if (!result.success) {
@@ -32,12 +36,24 @@ const Login = () => {
       return;
     }
     try {
-      await login(input);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
+      setLoading(true);
+      const { email, password } = input;
+      const response = await axios.post('/api/v1/login', {
+        email,
+        password
+      })
+      dispatch(login({ user: response.data.user, accessToken: response.data.accessToken}));
+      navigate('/');
+      setInput({email: '', password: ''})
+    } catch (error: any) {
+      if(error.response.data.message)
+        toast.error(error.response.data.message);
+      else
+        toast.error('Failed to login, please try again');
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [dispatch, input, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

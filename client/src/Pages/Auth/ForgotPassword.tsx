@@ -4,16 +4,14 @@ import { toast } from "sonner";
 import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useUserStore } from "@/store/Authstore";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState<string>("");
-  const { forgotPassword, loading } = useUserStore();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await forgotPassword(email);
       toast.success('Reset link sent successfully!');
     } catch (error) {
       console.log(error);

@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useUserStore } from "../../store/Authstore";
 import { toast } from "sonner";
 
 
 const EmailVerificationPage = () => {
 	const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
+	const [loading, setLoding] = useState(false);
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+	
 	const navigate = useNavigate();
-	const { loading, verifyEmail } = useUserStore();
+
 	const findLastIndexPolyfill = (array: string[], predicate: (value: string) => boolean): number => {
 		for (let i = array.length - 1; i >= 0; i--) {
 			if (predicate(array[i])) return i;

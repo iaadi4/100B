@@ -68,7 +68,7 @@ class AuthService {
                     refreshToken
                 }
             })
-            return { accessToken, refreshToken };
+            return { user, accessToken, refreshToken };
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;

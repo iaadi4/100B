@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
-import { useUserStore } from "../../store/Authstore";
 import { Book, Calendar1Icon, Loader2, LockKeyhole, Mail, User } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,7 +10,6 @@ import { Link, useNavigate } from "react-router-dom";
 const Signup = () => {
 
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
-  const { signup, loading } = useUserStore();
   const navigate = useNavigate();
 
   const [input, setInput] = useState<SignupInputState>({
@@ -21,6 +19,7 @@ const Signup = () => {
     year: "",
     branch: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,7 +35,6 @@ const Signup = () => {
       return;
     }
     try {
-      await signup(input);
       navigate("/verify-email");
     } catch (error) {
       console.log(error);
