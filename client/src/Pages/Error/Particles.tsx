@@ -1,6 +1,5 @@
-
 const Particles = () => {
-    const particleCount = 30;
+    const particleCount = 40;
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -21,7 +20,7 @@ const Particles = () => {
                     }}
                 >
                     <polygon
-                        points="12,2 22,9 18,22 6,22 2,9"
+                        points="12,2 20,8 20,16 12,22 4,16 4,8"
                         fill="black"
                     />
                 </svg>
