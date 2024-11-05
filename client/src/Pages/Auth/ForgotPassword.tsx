@@ -12,6 +12,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      
       toast.success('Reset link sent successfully!');
     } catch (error) {
       console.log(error);
@@ -41,12 +42,12 @@ const ForgotPassword = () => {
           loading ? (
             <Button disabled className=""><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait</Button>
           ) : (
-            <Button className="bg-blue-500 ">Send Reset Link</Button>
+            <Button className="bg-black">Send Reset Link</Button>
           )
         }
         <span className="text-center">
           Back to{" "}
-          <Link to="/login" className="text-blue-500">Login</Link>
+          <Link to="/login" className="text-blue-800">Login</Link>
         </span>
       </form>
     </div>

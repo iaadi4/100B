@@ -1,7 +1,7 @@
 import axios from "../../api/axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const EmailVerificationPage = () => {
@@ -39,13 +39,13 @@ const EmailVerificationPage = () => {
 		}
 	};
 
-	const handleResendOTP = async () => {
+	const handleResendOTP = useCallback(async () => {
 		setIsResending(true);
 		setResendTimer(60);
 		try {
 			const response = await axios.post("/api/v1/verify-otp", { id: data.id, mailTo: data.email });
 			setCheckOtp(response.data.otp);
-			toast.success("OTP has been resent!");
+			toast.success("OTP has been sent!");
 
 			const interval = setInterval(() => {
 				setResendTimer((prev) => {
@@ -61,7 +61,7 @@ const EmailVerificationPage = () => {
 			toast.error("Failed to resend OTP. Please try again.");
 			setIsResending(false);
 		}
-	};
+	}, [data]);
 
 	const handleVerifyOTP = async () => {
 		const otpString = otp.join("");
@@ -112,7 +112,7 @@ const EmailVerificationPage = () => {
 						onClick={handleResendOTP}
 						className="text-black underline hover:text-blue-900"
 					>
-						Resend OTP
+						send OTP
 					</button>
 				)}
 			</div>
