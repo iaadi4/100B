@@ -13,16 +13,41 @@ const update = async(req: Request, res: Response) => {
             })
         }
         const response = await userService.update(req.body, req.user.id);
-        const { id, name, email, branch, year } = response;
+        const { id, name, email, branch, year, role } = response;
         return res.status(statusCode.SUCCESS).json({
             success: true,
             message: "User details updated",
-            user: { id, name, email, branch, year }
+            user: { id, name, email, branch, year, role }
         });
     } catch (error) {
         return res.status(statusCode.INTERNAL_ERROR).json({
             success: true,
             message: "Failed to update user details",
+            error: error
+        })
+    }
+}
+
+const get = async (req: Request, res: Response) => {
+    try {
+        const email = (req.query.email as string);
+        const response = await userService.getByEmail(email);
+        if(!response) {
+            return res.status(statusCode.BAD_REQUEST).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        const { id, name, branch, year, role } = response;
+        return res.status(statusCode.SUCCESS).json({
+            success: true,
+            message: "User fetched",
+            user: { id, name, branch, year, role }
+        });
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            success: true,
+            message: "Failed to get user",
             error: error
         })
     }
@@ -63,5 +88,6 @@ const remove = async (req: Request, res: Response) => {
 export default {
     update,
     getAll,
-    remove
+    remove,
+    get
 }

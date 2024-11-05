@@ -1,14 +1,16 @@
 import axios from "../../api/axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const EmailVerificationPage = () => {
 	const [otp, setOtp] = useState(Array(6).fill(""));
 	const [isResending, setIsResending] = useState(false);
 	const [resendTimer, setResendTimer] = useState(60);
 	const [checkOtp, setCheckOtp] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -39,13 +41,13 @@ const EmailVerificationPage = () => {
 		}
 	};
 
-	const handleResendOTP = async () => {
+	const handleResendOTP = useCallback(async () => {
 		setIsResending(true);
 		setResendTimer(60);
 		try {
 			const response = await axios.post("/api/v1/verify-otp", { id: data.id, mailTo: data.email });
 			setCheckOtp(response.data.otp);
-			toast.success("OTP has been resent!");
+			toast.success("OTP has been sent!");
 
 			const interval = setInterval(() => {
 				setResendTimer((prev) => {
@@ -61,21 +63,35 @@ const EmailVerificationPage = () => {
 			toast.error("Failed to resend OTP. Please try again.");
 			setIsResending(false);
 		}
-	};
+	}, [data]);
 
 	const handleVerifyOTP = async () => {
 		const otpString = otp.join("");
 		if (checkOtp === otpString) {
-			toast.success('Email verified successfully');
-			navigate('/login');
+			try {
+				setLoading(true);
+				const { name, email, branch, year, password } = data;
+				const response = await axios.post('/api/v1/signup', {
+					name,
+					email,
+					branch,
+					year,
+					password
+				})
+				console.log(response);
+				toast.success('Email verified successfully');
+				navigate('/login');
+			} catch (error: any) {
+				console.log(error);
+				if (error.response.data.message)
+					toast.error(error.response.data.message);
+				else
+					toast.error('Failed to verify email');
+			} finally {
+				setLoading(false);
+			}
 		} else {
-			toast.error('Wrong OTP');
-			await axios.delete('/api/v1/user', {
-				data: {
-					id: data.id
-				}
-			})
-			navigate('/signup');
+			toast.error('Wrong OTP, please try again!');
 		}
 	};
 
@@ -100,9 +116,15 @@ const EmailVerificationPage = () => {
 
 			</div>
 
-			<Button onClick={handleVerifyOTP} className="mt-8 w-32">
-				Verify
-			</Button>
+			{loading ? (
+				<Button disabled className="w-32 mt-6">
+					<Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
+				</Button>
+			) : (
+				<Button type="submit" onClick={handleVerifyOTP} className="w-32 mt-6">
+					Verify
+				</Button>
+			)}
 
 			<div className="mt-4">
 				{isResending ? (
@@ -112,7 +134,7 @@ const EmailVerificationPage = () => {
 						onClick={handleResendOTP}
 						className="text-black underline hover:text-blue-900"
 					>
-						Resend OTP
+						send OTP
 					</button>
 				)}
 			</div>

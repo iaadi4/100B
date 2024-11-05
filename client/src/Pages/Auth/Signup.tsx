@@ -1,4 +1,3 @@
-import axios from "../../api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -38,17 +37,8 @@ const Signup = () => {
     }
     try {
       setLoading(true);
-      const { name, email, password, year, branch } = input;
-      const response = await axios.post('/api/v1/signup', {
-        email,
-        password,
-        name,
-        branch,
-        year
-      })
-      console.log(response);
       setInput({ name: '', email: '', password: '', year: '', branch: '' });
-      navigate("/verify-email", { state: { ...response.data.user } });
+      navigate("/verify-email", { state: input });
     } catch (error: any) {
       if (error.response.data.message)
         toast.error(error.response.data.message);

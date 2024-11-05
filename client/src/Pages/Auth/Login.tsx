@@ -96,7 +96,7 @@ const Login = () => {
             )}
           </div>
         </div>
-        <div className="mb-10">
+        <div className="mb-4">
           {loading ? (
             <Button disabled className="w-full bg-black text-white">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
@@ -109,11 +109,17 @@ const Login = () => {
               Login
             </Button>
           )}
+          <p className="mt-2 text-sm">
+          Forgot{" "}
+          <Link to="/forgot-password" className="text-blue-500 text-sm">
+            Password?
+          </Link>
+        </p>
         </div>
         <Separator />
-        <p className="mt-2">
+        <p className="mt-2 text-sm">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-500">
+          <Link to="/signup" className="text-blue-500 text-sm">
             Signup
           </Link>
         </p>

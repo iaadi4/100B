@@ -19,6 +19,7 @@ model User {
   updatedAt        DateTime       @updatedAt
   otp              String?
   otpExp           DateTime?
+  resetToken       String?
   role             Role[]         @default([STUDENT])
   notes            Note[]         @relation("UserNotes")
   polls            Poll[]         @relation("UserPoll")
