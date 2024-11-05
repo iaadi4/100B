@@ -1,33 +1,52 @@
 import React, { useState } from 'react';
+import { jwtDecode } from "jwt-decode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, LockKeyholeIcon } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import axios from '@/api/axios';
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const ACCESS_TOKEN_SECRET = import.meta.env.VITE_ACCESS_TOKEN_SECRET;
+
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
 
+  if (!token) {
+    toast.error('Invalid reset link')
+    navigate('/login');
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    if (!token) {
-      alert('Invalid token');
-      return;
-    }
     try {
-      alert('Password reset successfully');
-      navigate('/login');
+      setLoading(true);
+      const user = jwtDecode(token!, ACCESS_TOKEN_SECRET);
+      if (!user) {
+        toast.error('Invalid reset token');
+        navigate('/login')
+      } else {
+        await axios.patch('/api/v1/user',
+          { password: newPassword },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+        toast.success('Password changed successfully');
+        navigate('/login');
+      }
     } catch (error) {
+      toast.error('Something went wrong, please try again!');
       console.log(error);
-      alert('Failed to reset password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,11 +78,11 @@ const ResetPassword = () => {
           <LockKeyholeIcon className="absolute inset-y-2 left-2 text-gray-600 pointer-events-none" />
         </div>
         {loading ? (
-          <Button disabled className="bg-orange hover:bg-hoverOrange">
+          <Button disabled className="">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
           </Button>
         ) : (
-          <Button type="submit" className="bg-orange hover:bg-hoverOrange">
+          <Button type="submit" className="text-white bg-black">
             Reset Password
           </Button>
         )}

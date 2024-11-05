@@ -3,23 +3,44 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "@/api/axios";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      
-      toast.success('Reset link sent successfully!');
+      setLoading(true);
+      const response = await axios.get('/api/v1/user', {
+        params: {
+          email: email
+        }
+      })
+      if(!response.data.user) {
+        toast.error('User not found');
+      } else {
+        const user = response.data.user;
+        await axios.post('/api/v1/reset-password', {
+          userId: user.id,
+          email: email,
+          role: user.role
+        })
+        setEmail('');
+        toast.success('Reset link sent successfully!');
+        navigate('/login');
+      }
     } catch (error) {
       console.log(error);
       toast.error('Failed to send reset link.');
+    } finally {
+      setLoading(false);
     }
   };
-
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full">

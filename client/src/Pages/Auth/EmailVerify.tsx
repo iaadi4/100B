@@ -47,7 +47,6 @@ const EmailVerificationPage = () => {
 		try {
 			const response = await axios.post("/api/v1/verify-otp", { id: data.id, mailTo: data.email });
 			setCheckOtp(response.data.otp);
-			console.log(response.data.otp);
 			toast.success("OTP has been sent!");
 
 			const interval = setInterval(() => {

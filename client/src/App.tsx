@@ -4,6 +4,7 @@ import NotFoundPage from './Pages/Error/Error';
 import Signup from "./Pages/Auth/Signup";
 import Login from './Pages/Auth/Login';
 import ForgotPassword from './Pages/Auth/ForgotPassword';
+import ResetPassword from './Pages/Auth/ResetPassword';
 import EmailVerificationPage from './Pages/Auth/EmailVerify';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path='/reset-password/:token' element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )

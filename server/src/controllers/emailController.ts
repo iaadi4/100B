@@ -20,6 +20,23 @@ const generateOtp = async (req: Request, res: Response) => {
     }
 }
 
+const generateResetPasswordToken = async (req: Request, res: Response) => {
+    try {
+        const response = await emailService.sendResetPasswordToken(req.body.userId, req.body.email, req.body.role);
+        return res.status(statusCode.SUCCESS).json({
+            token: response,
+            success: true,
+            message: "Token generated"
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            success: false,
+            message: "Failed to generate reset token"
+        })
+    }
+}
+
 export default {
-    generateOtp
+    generateOtp,
+    generateResetPasswordToken
 }

@@ -45,7 +45,8 @@ router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
-router.get('/user', verifyJwt, userController.getAll);
+router.get('/users', verifyJwt, userController.getAll);
+router.get('/user', userController.get);
 router.delete('/user', userController.remove);
 router.post('/announcement', verifyJwt, uploadHandle.single('file'), announcementController.create);
 router.patch('/announcement', verifyJwt, announcementController.update);
@@ -59,6 +60,7 @@ router.post('/confession', verifyJwt, confessionController.create);
 router.delete('/confession', verifyJwt, confessionController.remove);
 router.get('/confession', verifyJwt, confessionController.getAll);
 router.post('/verify-otp', emailController.generateOtp);
+router.post('/reset-password', emailController.generateResetPasswordToken);
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof MulterError) {
