@@ -41,7 +41,7 @@ const Login = () => {
       const response = await axios.post('/api/v1/login', {
         email,
         password
-      })
+      }, { withCredentials: true })
       dispatch(login({ user: response.data.user, accessToken: response.data.accessToken}));
       navigate('/');
       setInput({email: '', password: ''})

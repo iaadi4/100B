@@ -17,6 +17,10 @@ const EmailVerificationPage = () => {
 	const data = location?.state;
 
 	useEffect(() => {
+		toast.info('Click on send Otp to send verification code');
+	}, [])
+
+	useEffect(() => {
 		if (!data) {
 			navigate("/signup");
 			toast.error("You must signup first");
