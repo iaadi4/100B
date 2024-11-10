@@ -10,7 +10,7 @@ const signup = async (req: Request, res: Response) => {
         if(response == 400) {
             return res.status(statusCode.BAD_REQUEST).json({
                 success: true,
-                message: "Invalid email"
+                message: "Please use IIIT Ranchi email"
             })
         }
         const { id, name, email, branch, year } = response;
