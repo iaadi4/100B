@@ -6,6 +6,7 @@ import Login from './Pages/Auth/Login';
 import ForgotPassword from './Pages/Auth/ForgotPassword';
 import ResetPassword from './Pages/Auth/ResetPassword';
 import EmailVerificationPage from './Pages/Auth/EmailVerify';
+import Layout from './Layout/Layout';
 import { useSelector } from 'react-redux';
 
 function App() {
@@ -15,10 +16,12 @@ function App() {
     <BrowserRouter >
       <Routes>
         <Route path='*' element={<NotFoundPage />} />
-        <Route path='/' element={ user? <Home /> : <Navigate to={'/login'} />} />
-        <Route path="/signup" element={ user? <Navigate to={'/'} /> : <Signup />} />
-        <Route path="/login" element={ user? <Navigate to={'/'} /> : <Login />} />
-        <Route path="/forgot-password" element={ <ForgotPassword /> } />
+        <Route element={<Layout />}>
+          <Route path='/' element={user ? <Home /> : <Navigate to={'/login'} />} />
+        </Route>
+        <Route path="/signup" element={user ? <Navigate to={'/'} /> : <Signup />} />
+        <Route path="/login" element={user ? <Navigate to={'/'} /> : <Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
       </Routes>
