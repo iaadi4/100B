@@ -38,7 +38,7 @@ const EmailVerificationPage = () => {
 		}
 	};
 
-	const handleKeyDown = (e, index: number) => {
+	const handleKeyDown = (e: any, index: number) => {
 		if (e.key === "Backspace" && otp[index] === "") {
 			const prevInput = document.getElementById(`otp-${index - 1}`);
 			if (prevInput) prevInput.focus();
