@@ -5,6 +5,8 @@ This platform streamlines academic resource sharing, real-time communication, an
 
 ---
 
+## Live link - https://100b-lilac.vercel.app
+
 ## Table of Contents
 
 - [Registration](#registration)
