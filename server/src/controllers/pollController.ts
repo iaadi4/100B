@@ -60,9 +60,85 @@ const extendPoll = async (req: Request, res: Response) => {
     }
 }
 
+const getPoll = async (req: Request, res: Response) => {
+    try {
+        const poll = await pollService.getPoll(req.body.pollId);
+        return res.status(statusCode.SUCCESS).json({
+            poll
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch poll",
+            error: error
+        });
+    }
+}
+
+const getPolls = async (req: Request, res: Response) => {
+    try {
+        const polls = await pollService.getPolls(req.body.pageNo);
+        return res.status(statusCode.SUCCESS).json({
+            polls
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch polls",
+            error: error
+        });
+    }
+}
+
+const getPollsByDateCreation = async (req: Request, res: Response) => {
+    try {
+        const polls = await pollService.getPollsByDateCreation(req.body.pageNo, req.body.ascending);
+        return res.status(statusCode.SUCCESS).json({
+            polls
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch polls",
+            error: error
+        });
+    }
+}
+
+const getPollByYearOrBranch = async (req: Request, res: Response) => {
+    try {
+        const { year, branch, pageNo } = req.body;
+        const polls = await pollService.getPollByYearOrBranch(pageNo, year, branch);
+        return res.status(statusCode.SUCCESS).json({
+            polls
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch polls",
+            error: error
+        });
+    }
+}
+
+const getPollsByTitle = async (req: Request, res: Response) => {
+    try {
+        const polls = await pollService.getPollsByTitle(req.body.pageNo, req.body.searchTitle);
+        return res.status(statusCode.SUCCESS).json({
+            polls
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to fetch polls",
+            error: error
+        });
+    }
+}
+
 export default {
     create,
     remove,
     closePoll,
-    extendPoll
+    extendPoll,
+    getPolls,
+    getPollsByTitle,
+    getPoll,
+    getPollsByDateCreation,
+    getPollByYearOrBranch
 }

@@ -40,7 +40,11 @@ router.get('/logout', handleLogout);
 router.post('/upload', verifyJwt, uploadHandle.single('file'), noteController.upload);
 router.post('/delete-file', verifyJwt, noteController.remove);
 router.post('/poll', verifyJwt, pollController.create);
+router.get('/poll', verifyJwt, pollController.getPoll);
 router.delete('/poll', verifyJwt, pollController.remove);
+router.get('/polls', verifyJwt, pollController.getPolls);
+router.get('/polls/date', verifyJwt, pollController.getPollsByDateCreation)
+router.get('/search/polls', verifyJwt, pollController.getPollsByTitle);
 router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
 router.post('/vote', verifyJwt, voteController.vote);
