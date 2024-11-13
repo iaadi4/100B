@@ -24,17 +24,36 @@ const getReceiverSocketId = (id: number) => {
 }
 
 io.on('connection', (socket) => {
-    console.log('User joined with socket id', socket.id);
-    // from frontend we will send query
-    const userId = socket.handshake.query.userId;
+    console.log('user joined', socket.id);
+    const userId: string = socket.handshake.query.userId as string;
     if(userId != "undefined") {
-        //@ts-ignore
-        userSocketMap[userId] = socket.id;
+        userSocketMap[parseInt(userId)] = socket.id;
     }
+
+    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+
     socket.on('disconnect', () => {
-        console.log('User disconnected with socket id', socket.id);
-        //@ts-ignore
+        console.log('User disconnected', socket.id);
         delete userSocketMap[userId];
+        io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    })
+
+    socket.on('clearMessage', ({conversationId}) => {
+        const receiverSocketId = getReceiverSocketId(conversationId);
+        if(receiverSocketId) 
+            io.to(receiverSocketId).emit('clearMessage', {conversationId});
+    })
+
+    socket.on('seen', ({conversationId, userId}) => {
+        const receiverSocketId = getReceiverSocketId(conversationId);
+        if(receiverSocketId)
+            io.to(receiverSocketId).emit('messageSeen', {userId: userId, conversationId: conversationId})
+    })
+
+    socket.on('updateSeen', ({conversationId}) => {
+        const receiverSocketId = getReceiverSocketId(conversationId);
+        if(receiverSocketId)
+            io.to(receiverSocketId).emit('updated', {conversationId});
     })
 })
 

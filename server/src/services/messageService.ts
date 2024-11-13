@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import getReceiverSocketId from "../socket/socket";
+import { io } from "../socket/socket";
 
 const prisma = new PrismaClient();
 
@@ -47,6 +49,10 @@ class MessageService {
                     conversationId: parseInt(conversationId)
                 }
             })
+            const receiverSocketId = getReceiverSocketId(parseInt(receiverId));
+            if(receiverSocketId) {
+                io.to(receiverSocketId).emit('newMessage', message);
+            }
             return message;
         } catch (error) {
             console.log('Something went wrong in the service layer');
