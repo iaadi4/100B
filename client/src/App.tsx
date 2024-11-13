@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Home from './Pages/Home/Home';
 import NotFoundPage from './Pages/Error/Error';
 import Signup from "./Pages/Auth/Signup";
@@ -7,7 +8,12 @@ import ForgotPassword from './Pages/Auth/ForgotPassword';
 import ResetPassword from './Pages/Auth/ResetPassword';
 import EmailVerificationPage from './Pages/Auth/EmailVerify';
 import Layout from './Layout/Layout';
-import { useSelector } from 'react-redux';
+import Notes from './Pages/Note/Notes';
+import Chats from './Pages/Chat/Chats';
+import Polls from './Pages/Poll/Polls';
+import Confession from './Pages/Confession/Confession';
+import Announcements from './Pages/Announcement/Announcements';
+import Profile from './Pages/Profile/Profile';
 
 function App() {
   const user = useSelector((state: any) => state.auth.userData);
@@ -16,8 +22,14 @@ function App() {
     <BrowserRouter >
       <Routes>
         <Route path='*' element={<NotFoundPage />} />
-        <Route element={<Layout />}>
-          <Route path='/' element={user ? <Home /> : <Navigate to={'/login'} />} />
+        <Route element={user ? <Layout /> : <Navigate to={'/login'} />}>
+          <Route path='/' element={<Home />} />
+          <Route path='/notes' element={<Notes />} />
+          <Route path='/chats' element={<Chats />} />
+          <Route path='/polls' element={<Polls />} />
+          <Route path='/confession' element={<Confession />} />
+          <Route path='/announcements' element={<Announcements />} />
+          <Route path='/profile' element={<Profile />} />
         </Route>
         <Route path="/signup" element={user ? <Navigate to={'/'} /> : <Signup />} />
         <Route path="/login" element={user ? <Navigate to={'/'} /> : <Login />} />
