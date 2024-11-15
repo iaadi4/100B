@@ -30,7 +30,7 @@ const Contact = ({ contact }: any) => {
 
   return (
     <div
-      className={selectedContact.id == contact.id ? `flex w-full h-16 cursor-pointer bg-orange-400` : `flex w-full h-16 cursor-pointer hover:bg-orange-400`}
+      className={selectedContact?.id == contact.id ? `flex w-full h-16 cursor-pointer bg-orange-400` : `flex w-full h-16 cursor-pointer hover:bg-orange-400`}
       onClick={() => dispatch(setSelected({messages: contact.messages, contact: contactObj, id: contact.id}))}
     >
       <div className="flex items-center justify-center w-[20%]">

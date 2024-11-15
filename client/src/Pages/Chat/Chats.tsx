@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../../components/ui/input";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import Contact from "../../components/Contact";
 import Directory from "../../components/Directory";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { EllipsisVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Message from "@/components/Message";
 import { toast } from "sonner";
+import io from "socket.io-client";
+import { setSocket, setOnlineUsers } from "@/Redux/socketSlice";
 
 interface Message {
   id: number
@@ -31,8 +33,37 @@ const Chats = () => {
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
   const axiosPrivate = useAxiosPrivate();
+  const dispatch = useDispatch();
 
   const selectedContact = useSelector((state: any) => state.contact.selected);
+  const user = useSelector((state: any) => state.auth.userData);
+  const socket = useSelector((state: any) => state.socket.instance);
+
+  //@ts-expect-error some socket incompatiablity
+  useEffect(() => {
+    const socket = io('localhost:3000', {
+      query: {
+        userId: user.id
+      }
+    });
+    dispatch(setSocket(socket));
+    socket.on('getOnlineUsers', (users: any) => {
+      dispatch(setOnlineUsers(users));
+    })
+    return () => socket.disconnect();
+  }, [dispatch, user])
+
+  const handleNewMessage = useCallback((newMessage: any) => {
+    if (newMessage.receiverId == user.id) {
+      setMessages((prev) => [...prev, newMessage])
+    }
+  }, [user.id])
+
+  useEffect(() => {
+    socket?.on("newMessage", handleNewMessage);
+    return () => socket?.off("newMessage", handleNewMessage);
+  }, [socket, handleNewMessage]);
+
 
   useEffect(() => {
     const getConversations = async () => {
@@ -71,8 +102,10 @@ const Chats = () => {
   useEffect(() => {
     const getMessages = async () => {
       try {
-        const response = await axiosPrivate.get(`/api/v1/conversation/${selectedContact.id}`)
-        setMessages(response.data.response.messages);
+        if (selectedContact?.id) {
+          const response = await axiosPrivate.get(`/api/v1/conversation/${selectedContact.id}`)
+          setMessages(response.data.response.messages);
+        }
       } catch (error: any) {
         console.log(error);
         if (error.response.data.message)
@@ -175,7 +208,7 @@ const Chats = () => {
         </div>
       </div>
       <div className="flex h-full w-[70%] bg-slate-100 min-w-[600px] flex-col">
-        <div className="flex w-full h-[65px] bg-white mb-2">
+        <div className="flex w-full h-[75px] bg-white mb-2">
           <div className="flex h-full ml-8 items-center">
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" alt="profilepic.png" />
