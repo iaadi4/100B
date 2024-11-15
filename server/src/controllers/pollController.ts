@@ -24,18 +24,27 @@ const create = async (req: Request, res: Response) => {
 
 const remove = async (req: Request, res: Response) => {
     try {
-        await pollService.remove(req.body.pollId);
-        return res.status(statusCode.SUCCESS).json({
-            message: "Poll removed"
-        })
+        const { pollId } = req.body;
+        if (!pollId) {
+            return res.status(400).json({ message: "Poll ID is required" });
+        }
+
+        console.log('Received pollId:', pollId);
+
+        await pollService.remove(pollId);
+
+        return res.status(200).json({
+            message: "Poll removed",
+        });
     } catch (error) {
-        return res.status(statusCode.INTERNAL_ERROR).json({
+        console.error('Error in controller:', error);
+
+        return res.status(500).json({
             message: "Failed to delete poll",
-            error: error
+            error: (error as any).message,
         });
     }
-}
-
+};
 const closePoll = async (req: Request, res: Response) => {
     try {
         await pollService.closePoll(req.body.pollId);

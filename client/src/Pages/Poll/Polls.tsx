@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 interface Poll {
-  id: string;
+  id: number;
   title: string;
   options: string[];
   year: string;
@@ -92,16 +92,19 @@ const Polls = () => {
     }
   };
 
-  const handleDeletePoll = async (pollId: string) => {
+  const handleDeletePoll = async (pollId: number) => {
     try {
-      await axiosPrivate.delete('api/v1/poll', { data: { pollId } });
-      setMessage('Poll deleted successfully!');
-      fetchPolls();
+        await axiosPrivate.delete('api/v1/poll', {
+            data: { pollId },
+        });
+
+        setMessage('Poll deleted successfully!');
+        fetchPolls();
     } catch (error) {
-      setMessage('Failed to delete poll');
-      console.error(error);
+        setMessage('Failed to delete poll');
+        console.error('Error in frontend:', error);
     }
-  };
+};
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-lg rounded-lg">
