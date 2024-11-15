@@ -6,7 +6,8 @@ const conversationService = new ConversationService();
 
 const getWithMessage = async (req: Request, res: Response) => {
     try {
-        const response = await conversationService.getWithMessage(req.body.conversationId);
+        const conversationId = String(req.params.conversationId);
+        const response = await conversationService.getWithMessage(conversationId);
         return res.status(statusCode.SUCCESS).json({response});
     } catch (error) {
         return res.status(statusCode.INTERNAL_ERROR).json({

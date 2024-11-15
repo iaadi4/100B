@@ -70,6 +70,23 @@ const getAll = async (req: Request, res: Response) => {
     }
 }
 
+const getConversations = async (req: Request, res: Response) => {
+    try {
+        const conversations = await userService.getConversations(req.user.id);
+        return res.status(statusCode.SUCCESS).json({
+            success: true,
+            message: "Fetched conversations",
+            conversations
+        });
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            success: false,
+            message: "Failed to get conversations",
+            error: error
+        })
+    }
+}
+
 const remove = async (req: Request, res: Response) => {
     try {
         await userService.remove(req.body.id);
@@ -89,5 +106,6 @@ export default {
     update,
     getAll,
     remove,
-    get
+    get,
+    getConversations
 }

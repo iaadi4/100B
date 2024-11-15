@@ -23,6 +23,28 @@ class UserService {
         }
     }
 
+    async getConversations(userId: number) {
+        try {
+            const user = await prisma.user.findFirst({
+                where: {
+                    id: userId
+                },
+                include: {
+                    conversations: {
+                        include: {
+                            messages: true,
+                            participants: true
+                        }
+                    }
+                }
+            })
+            return user?.conversations;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
+
     async getByEmail(email: string) {
         try {
             const response = await prisma.user.findFirst({
