@@ -1,8 +1,13 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { setSelected } from "@/Redux/contactSlice";
 
 const Contact = ({ contact }: any) => {
+  const dispatch = useDispatch();
+
   const user = useSelector((state: any) => state.auth.userData);
+  const selectedContact = useSelector((state: any) => state.contact.selected);
+
   const participants = contact.participants;
   const contactObj = participants.filter((contact: any) => contact.name != user.name);
 
@@ -24,7 +29,10 @@ const Contact = ({ contact }: any) => {
   }
 
   return (
-    <div className="flex w-full h-16 cursor-pointer hover:bg-orange-400">
+    <div
+      className={selectedContact.id == contact.id ? `flex w-full h-16 cursor-pointer bg-orange-400` : `flex w-full h-16 cursor-pointer hover:bg-orange-400`}
+      onClick={() => dispatch(setSelected({messages: contact.messages, contact: contactObj, id: contact.id}))}
+    >
       <div className="flex items-center justify-center w-[20%]">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="profilepic.png" />
