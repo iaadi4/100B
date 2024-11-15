@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc -b && npx nodemon dist/index"
+    "start": "tsc -b && npx nodemon dist/index",
+    "build": "tsc -b && npm run copy-views",
+    "copy-views": "copyfiles -u 1 src/views/404.html dist/views"
   },
   "keywords": [],
   "author": "",
@@ -34,8 +36,9 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^1.4.12",
-    "@types/nodemailer": "^6.4.16",
     "@types/node": "^22.8.1",
+    "@types/nodemailer": "^6.4.16",
+    "copyfiles": "^2.4.1",
     "prisma": "^5.21.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"

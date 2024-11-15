@@ -25,6 +25,7 @@ class PollService {
                 })
             }
             return response;
+            console.log('Poll created');
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;
@@ -80,6 +81,7 @@ class PollService {
 
     async getPoll(pollId: string) {
         try {
+            console.log('PollId:', pollId);
             const poll = await prisma.poll.findFirst({
                 where: {
                     id: parseInt(pollId)
@@ -87,7 +89,7 @@ class PollService {
             })
             return poll;
         } catch (error) {
-            console.log('Something went wrong in the service layer');
+            console.log('Something went wrong in the service layer',error);
             throw error;
         }
     }
@@ -126,17 +128,25 @@ class PollService {
     }
 
     async getPolls(pageNo: string) {
-        try {
-            const polls = await prisma.poll.findMany({
-                skip: (parseInt(pageNo) - 1) * 4,
-                take: 4
-            });
-            return polls;
-        } catch (error) {
-            console.log('Something went wrong in the service layer');
-            throw error;
-        }
-    }
+        const polls = await prisma.poll.findMany({
+          skip: (parseInt(pageNo) - 1) * 4,
+          take: 4,
+          include: { votes: true },
+        });
+      
+        return polls.map((poll) => ({
+          ...poll,
+          voteCounts: poll.votes.reduce((acc: { [key: string]: number }, vote) => {
+            acc[vote.option] = (acc[vote.option] || 0) + 1;
+            return acc;
+          }, {}), // Explicitly defining the accumulator type
+          votes: poll.votes.map((vote) => ({
+            id: vote.id, // Include voteId in the response
+            option: vote.option,
+          })),
+        }));
+      }
+      
 
     async getPollsByTitle(pageNo: string, searchTitle: string) {
         try {

@@ -9,6 +9,8 @@ import logMethods from "./middlewares/logEvents";
 import errorHandler from "./middlewares/errorHandler";
 import cors from "cors";
 import path from "path";
+import express from "express";
+
 
 const { PORT } = config; 
 
@@ -19,6 +21,7 @@ app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use('/api', apiRoutes);
+
 
 app.all('*', (req, res) => {
     res.status(404);
@@ -31,8 +34,10 @@ app.all('*', (req, res) => {
     }
 });
 
+
 app.use(errorHandler);
 
 server.listen(PORT, () => {
     console.log('server started at', PORT);
 });
+

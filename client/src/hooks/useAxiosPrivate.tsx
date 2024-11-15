@@ -40,4 +40,8 @@ const useAxiosPrivate = () => {
     return axiosPrivate;
 }
 
+export const getAxiosPrivateInstance = () => {
+    return axiosPrivate;
+}
+
 export default useAxiosPrivate;
