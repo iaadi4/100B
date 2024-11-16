@@ -32,7 +32,53 @@ const remove = async (req: Request, res: Response) => {
     }
 }
 
+const getAll = async (req: Request, res: Response) => {
+    try {
+        const notes = await noteService.getAll(req.body.pageNo, req.body.ascending);
+        return res.status(statusCode.SUCCESS).json({
+            notes
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: 'Failed to get notes',
+            error: error
+        })
+    }
+}
+
+const getNotesByTitle = async (req: Request, res: Response) => {
+    try {
+        const notes = await noteService.getNotesByTitle(req.body.pageNo, req.body.searchTitle, req.body.ascending);
+        return res.status(statusCode.SUCCESS).json({
+            notes
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: 'Failed to get notes',
+            error: error
+        })
+    }
+}
+
+const getNotesByFilter = async (req: Request, res: Response) => {
+    try {
+        const { pageNo, ascending, subject, year, branch } = req.body;
+        const notes = await noteService.getNotesWithFilter(pageNo, ascending, subject, year, branch);
+        return res.status(statusCode.SUCCESS).json({
+            notes
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: 'Failed to get notes',
+            error: error
+        })
+    }
+}
+
 export default {
     upload,
-    remove
+    remove,
+    getAll,
+    getNotesByTitle,
+    getNotesByFilter
 }
