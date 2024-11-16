@@ -47,6 +47,7 @@ router.get('/polls/date', verifyJwt, pollController.getPollsByDateCreation)
 router.get('/search/polls', verifyJwt, pollController.getPollsByTitle);
 router.patch('/close-poll', verifyJwt, pollController.closePoll);
 router.patch('/extend-poll', verifyJwt, pollController.extendPoll);
+router.delete('/vote', verifyJwt, voteController.deleteVote);
 router.post('/vote', verifyJwt, voteController.vote);
 router.patch('/user', verifyJwt, userController.update);
 router.get('/users', verifyJwt, userController.getAll);
