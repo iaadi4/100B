@@ -5,7 +5,6 @@ import statusCode from "../utils/statuscode";
 const pollService = new PollService();
 
 const create = async (req: Request, res: Response) => {
-    console.log("Creating poll");
     try {
         console.log(req.body);
         const response = await pollService.create(req.body, req.user.id);
@@ -28,23 +27,18 @@ const remove = async (req: Request, res: Response) => {
         if (!pollId) {
             return res.status(400).json({ message: "Poll ID is required" });
         }
-
-        console.log('Received pollId:', pollId);
-
         await pollService.remove(pollId);
-
         return res.status(200).json({
             message: "Poll removed",
         });
     } catch (error) {
-        console.error('Error in controller:', error);
-
         return res.status(500).json({
             message: "Failed to delete poll",
-            error: (error as any).message,
+            error: error,
         });
     }
 };
+
 const closePoll = async (req: Request, res: Response) => {
     try {
         await pollService.closePoll(req.body.pollId);
@@ -89,31 +83,12 @@ const getPoll = async (req: Request, res: Response) => {
 
 const getPolls = async (req: Request, res: Response) => {
     try {
-        console.log(req.body);
         const { pageNo } = req.query; 
-        console.log('Page Number:', pageNo);
         const pageNumber = parseInt(pageNo as string, 10);
         if (!pageNo || isNaN(pageNumber)) {
-            return res.status(400).json({ message: "Invalid page number" });
+            return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
         }
-
-
-        const polls = await pollService.getPolls(pageNo as string);
-        return res.status(statusCode.SUCCESS).json({
-            polls
-        })
-    } catch (error) {
-        console.log("controllee error",error);
-        return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to fetch polls",
-            error: error
-        });
-    }
-}
-
-const getPollsByDateCreation = async (req: Request, res: Response) => {
-    try {
-        const polls = await pollService.getPollsByDateCreation(req.body.pageNo, req.body.ascending);
+        const polls = await pollService.getPolls(pageNo as string, req.body.ascending);
         return res.status(statusCode.SUCCESS).json({
             polls
         })
@@ -125,10 +100,10 @@ const getPollsByDateCreation = async (req: Request, res: Response) => {
     }
 }
 
-const getPollByYearOrBranch = async (req: Request, res: Response) => {
+const getPollWithFilters = async (req: Request, res: Response) => {
     try {
         const { year, branch, pageNo } = req.body;
-        const polls = await pollService.getPollByYearOrBranch(pageNo, year, branch);
+        const polls = await pollService.getPollWithFilters(pageNo, req.body.ascending, year, branch);
         return res.status(statusCode.SUCCESS).json({
             polls
         })
@@ -142,7 +117,7 @@ const getPollByYearOrBranch = async (req: Request, res: Response) => {
 
 const getPollsByTitle = async (req: Request, res: Response) => {
     try {
-        const polls = await pollService.getPollsByTitle(req.body.pageNo, req.body.searchTitle);
+        const polls = await pollService.getPollsByTitle(req.body.pageNo, req.body.ascending, req.body.searchTitle);
         return res.status(statusCode.SUCCESS).json({
             polls
         })
@@ -162,6 +137,5 @@ export default {
     getPolls,
     getPollsByTitle,
     getPoll,
-    getPollsByDateCreation,
-    getPollByYearOrBranch
+    getPollWithFilters
 }

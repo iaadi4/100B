@@ -14,6 +14,12 @@ interface notesData {
     branch: string
 }
 
+interface Ifilters {
+    subject?: string
+    year?: string
+    branch?: string
+}
+
 const s3Client = new S3Client({
     region: "ap-southeast-2",
     credentials: {
@@ -23,10 +29,10 @@ const s3Client = new S3Client({
 });
 
 class NoteService {
-    async upload(file: any, userId: number, {title, subject, year, branch}: notesData) {   
+    async upload(file: any, userId: number, { title, subject, year, branch }: notesData) {
         try {
             const result = await uploadFile(file);
-            if(!result)
+            if (!result)
                 throw new Error('Failed to upload file');
             const note = await prisma.note.create({
                 data: {
@@ -39,7 +45,7 @@ class NoteService {
                 }
             })
             return note;
-        } catch(error) {
+        } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;
         }
@@ -54,6 +60,68 @@ class NoteService {
             const command = new DeleteObjectCommand(params);
             await s3Client.send(command);
             return true;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
+
+    async getAll(pageNo: string, ascending: string) {
+        try {
+            if(!ascending) ascending = 'true';
+            const notes = await prisma.note.findMany({
+                skip: (parseInt(pageNo)-1)*6,
+                take: 6,
+                orderBy: {
+                    createdAt: ascending == 'true' ? 'asc' : 'desc'
+                }
+            })
+            return notes;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
+
+    async getNotesByTitle(pageNo: string, searchTitle: string, ascending: string) {
+        try {
+            if(!ascending) ascending = 'true';
+            const notes = await prisma.note.findMany({
+                skip: (parseInt(pageNo)-1)*6,
+                take: 6,
+                where: {
+                    title: {
+                        contains: searchTitle,
+                        mode: 'insensitive'
+                    }
+                },
+                orderBy: {
+                    createdAt: ascending == 'true' ? 'asc' : 'desc'
+                }
+            })
+            return notes;
+        } catch (error) {
+            console.log('Something went wrong in the service layer');
+            throw error;
+        }
+    }
+
+    async getNotesWithFilter(pageNo: string, ascending: string, subject?: string, year?: string, branch?: string) {
+        try {
+            if(!ascending) ascending = 'true';
+            const filters: Ifilters = {};
+            if(year) filters.year = year;
+            if(subject) filters.subject = subject;
+            if(branch) filters.branch = branch;
+            const notes = await prisma.note.findMany({
+                skip: (parseInt(pageNo)-1)*6,
+                take: 6,
+                where: filters,
+                orderBy:{
+                    createdAt: ascending == 'true' ? 'asc' : 'desc'
+                } 
+            })
+            return notes;
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;
