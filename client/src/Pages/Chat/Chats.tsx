@@ -83,7 +83,6 @@ const Chats = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        setLoading(true);
         const response = await axiosPrivate.get('/api/v1/users');
         setAllUsers(response.data.response);
       } catch (error: any) {
@@ -92,8 +91,6 @@ const Chats = () => {
         else
           toast.error('Failed to fetch directory')
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     }
     getAllUsers();
