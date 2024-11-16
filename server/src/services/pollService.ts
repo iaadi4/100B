@@ -33,17 +33,30 @@ class PollService {
 
     async remove(pollId: string) {
         try {
+            const pollIdInt = parseInt(pollId);
+            if (isNaN(pollIdInt)) {
+                throw new Error("Invalid poll ID");
+            }
+            const poll = await prisma.poll.findUnique({
+                where: { id: pollIdInt },
+            });
+            if (!poll) {
+                throw new Error("Poll not found");
+            }
+            await prisma.vote.deleteMany({
+                where: { pollId: pollIdInt },
+            });
             await prisma.poll.delete({
-                where: {
-                    id: parseInt(pollId)
-                }
-            })
+                where: { id: pollIdInt },
+            });
             return true;
         } catch (error) {
-            console.log('Something went wrong in the service layer');
+            console.error('Error in service layer:', error);
             throw error;
         }
     }
+
+
 
     async closePoll(pollId: string) {
         try {
@@ -87,18 +100,23 @@ class PollService {
             })
             return poll;
         } catch (error) {
-            console.log('Something went wrong in the service layer');
+            console.log('Something went wrong in the service layer', error);
             throw error;
         }
     }
 
-    async getPollsByDateCreation(pageNo: string, ascending: string) {
+    async getPollWithFilters(pageNo: string, ascending: string, year?: string, branch?: string) {
         try {
+            const filters: Ifilters = {};
+            if (year) filters.year = year;
+            if (branch) filters.branch = branch;
+            if(!ascending) ascending = 'true';
             const polls = await prisma.poll.findMany({
                 skip: (parseInt(pageNo) - 1) * 4,
                 take: 4,
+                where: filters,
                 orderBy: {
-                    createdAt: ascending === 'true' ? 'asc' : 'desc'
+                    createdAt: ascending == 'true' ? 'asc' : 'desc'
                 }
             })
             return polls;
@@ -108,38 +126,30 @@ class PollService {
         }
     }
 
-    async getPollByYearOrBranch(pageNo: string, year?: string, branch?: string) {
-        try {
-            const filters: Ifilters = {};
-            if (year) filters.year = year;
-            if (branch) filters.branch = branch;
-            const polls = await prisma.poll.findMany({
-                skip: (parseInt(pageNo) - 1) * 4,
-                take: 4,
-                where: filters
-            })
-            return polls;
-        } catch (error) {
-            console.log('Something went wrong in the service layer');
-            throw error;
-        }
+    async getPolls(pageNo: string, ascending: string) {
+        if(!ascending) ascending = 'true';
+        const polls = await prisma.poll.findMany({
+            skip: (parseInt(pageNo) - 1) * 4,
+            take: 4,
+            include: { votes: true },
+        });
+        return polls.map((poll) => ({
+            ...poll,
+            voteCounts: poll.votes.reduce((acc: { [key: string]: number }, vote) => {
+                acc[vote.option] = (acc[vote.option] || 0) + 1;
+                return acc;
+            }, {}),
+            votes: poll.votes.map((vote) => ({
+                id: vote.id,
+                option: vote.option,
+            })),
+        }));
     }
 
-    async getPolls(pageNo: string) {
-        try {
-            const polls = await prisma.poll.findMany({
-                skip: (parseInt(pageNo) - 1) * 4,
-                take: 4
-            });
-            return polls;
-        } catch (error) {
-            console.log('Something went wrong in the service layer');
-            throw error;
-        }
-    }
 
-    async getPollsByTitle(pageNo: string, searchTitle: string) {
+    async getPollsByTitle(pageNo: string, ascending: string, searchTitle: string) {
         try {
+            if(!ascending) ascending = 'true';
             const polls = await prisma.poll.findMany({
                 skip: (parseInt(pageNo) - 1) * 4,
                 take: 4,
@@ -148,6 +158,9 @@ class PollService {
                         contains: searchTitle,
                         mode: 'insensitive'
                     }
+                },
+                orderBy: {
+                    createdAt: ascending == 'true' ? 'asc' : 'desc'
                 }
             })
             return polls;
