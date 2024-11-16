@@ -4,6 +4,20 @@ import statusCode from "../utils/statuscode";
 
 const conversationService = new ConversationService();
 
+const create = async (req: Request, res: Response) => {
+    try {
+        await conversationService.create(req.user.id, req.body.contactId);
+        return res.status(statusCode.SUCCESS).json({
+            message: "User added to contacts",
+        })
+    } catch (error) {
+        return res.status(statusCode.INTERNAL_ERROR).json({
+            message: "Failed to add to contact",
+            error: error
+        })
+    }
+}
+
 const getWithMessage = async (req: Request, res: Response) => {
     try {
         const conversationId = String(req.params.conversationId);
@@ -32,6 +46,7 @@ const deleteConversation = async (req: Request, res: Response) => {
 }
 
 export default {
+    create,
     getWithMessage,
     deleteConversation
 }

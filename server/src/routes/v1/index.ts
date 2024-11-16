@@ -59,6 +59,7 @@ router.delete('/announcement', verifyJwt, announcementController.remove);
 router.post('/message', verifyJwt, messageController.send);
 router.get('/message', verifyJwt, messageController.getMessages);
 router.delete('/message', verifyJwt, messageController.remove);
+router.post('/conversation', verifyJwt, conversationController.create);
 router.get('/conversation/:conversationId', verifyJwt, conversationController.getWithMessage);
 router.delete('/conversation', verifyJwt, conversationController.deleteConversation);
 router.post('/confession', verifyJwt, confessionController.create);

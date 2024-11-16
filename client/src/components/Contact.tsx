@@ -40,7 +40,7 @@ const Contact = ({ contact }: any) => {
         </Avatar>
       </div>
       <div className="flex flex-col">
-        <div className={lastMessage?.content ? `ml-3 font-semibold mt-2` : `h-full flex items-center justify-center`}>
+        <div className={lastMessage?.content ? `ml-3 font-semibold mt-2` : `h-full font-semibold ml-3 flex items-center justify-center`}>
           {contactObj[0].name}
         </div>
         <div className="ml-3 text-sm text-slate-600">

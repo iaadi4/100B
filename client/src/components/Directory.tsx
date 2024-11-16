@@ -1,16 +1,13 @@
+import { toast } from "sonner";
 import { useState } from "react";
 import { IoMdPersonAdd } from "react-icons/io";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip,TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 const Directory = ({ contact }: any) => {
     const [loading, setLoading] = useState(false);
+    const axiosPrivate = useAxiosPrivate();
 
     let initials = contact.name[0];
     for (let i = 0; i < contact.name.length; i++) {
@@ -21,7 +18,21 @@ const Directory = ({ contact }: any) => {
     }
 
     const handleAddContact = async () => {
-
+        try {
+            setLoading(true);
+            const response = await axiosPrivate.post('/api/v1/conversation', {
+                contactId: contact.id
+            })
+            console.log(response);
+        } catch (error: any) {
+            console.log(error);
+            if(error.response.data.message)
+                toast.error(error.response.data.message);
+            else
+                toast.error("Failed to add to contacts")
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
