@@ -55,7 +55,7 @@ class PollService {
             throw error;
         }
     }
-
+    
     async closePoll(pollId: string) {
         try {
             const closesAt = new Date();

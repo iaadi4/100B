@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 interface Poll {
@@ -21,7 +21,7 @@ const Polls = () => {
   const [pageNo, setPageNo] = useState(1);
   const [message, setMessage] = useState('');
 
-  const fetchPolls = async () => {
+  const fetchPolls = useCallback(async () => {
     try {
       const response = await axiosPrivate.get('api/v1/polls', { params: { pageNo } });
       setPolls(response.data.polls);
@@ -29,11 +29,11 @@ const Polls = () => {
       setMessage('Failed to fetch polls');
       console.error(error);
     }
-  };
+  }, [axiosPrivate, pageNo]);
 
   useEffect(() => {
     fetchPolls();
-  }, [pageNo]);
+  }, [pageNo, fetchPolls]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -94,21 +94,19 @@ const Polls = () => {
 
   const handleDeletePoll = async (pollId: number) => {
     try {
-        await axiosPrivate.delete('api/v1/poll', {
-            data: { pollId },
-        });
-
-        setMessage('Poll deleted successfully!');
-        fetchPolls();
+      await axiosPrivate.delete('api/v1/poll', {
+        data: { pollId },
+      });
+      setMessage('Poll deleted successfully!');
+      fetchPolls();
     } catch (error) {
-        setMessage('Failed to delete poll');
-        console.error('Error in frontend:', error);
+      setMessage('Failed to delete poll');
+      console.error('Error in frontend:', error);
     }
-};
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-lg rounded-lg">
-     
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Create a New Poll</h2>
       <div className="space-y-3 mb-6">
         <input
@@ -140,9 +138,8 @@ const Polls = () => {
             onChange={(e) => setCurrentOption(e.target.value)}
           />
           <button
-            className={`w-full bg-green-500 text-white font-semibold py-2 rounded-md ${
-              newPoll.options.length >= 4 ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-600'
-            }`}
+            className={`w-full bg-green-500 text-white font-semibold py-2 rounded-md ${newPoll.options.length >= 4 ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-600'
+              }`}
             onClick={handleAddOption}
             disabled={newPoll.options.length >= 4}
           >
@@ -188,7 +185,7 @@ const Polls = () => {
                     ) : (
                       <button
                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                        onClick={() => handleVote(poll.id, option)}
+                        onClick={() => handleVote(String(poll.id), option)}
                       >
                         Vote
                       </button>
@@ -207,7 +204,7 @@ const Polls = () => {
         ))}
       </div>
 
-      
+
       <div className="flex justify-between items-center mt-6">
         <button
           className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"

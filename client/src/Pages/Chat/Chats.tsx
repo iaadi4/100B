@@ -69,7 +69,7 @@ const Chats = () => {
     const getConversations = async () => {
       try {
         setLoading(true);
-        const response = await axiosPrivate.get('/api/v1/user/conversation');
+        const response = await axiosPrivate.get('/api/v1/user/conversations');
         setConversations(response.data.conversations);
       } catch (error) {
         console.log(error);
