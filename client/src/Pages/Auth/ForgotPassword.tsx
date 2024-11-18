@@ -25,7 +25,7 @@ const ForgotPassword = () => {
         toast.error('User not found');
       } else {
         const user = response.data.user;
-        await axios.post('/api/v1/reset-password', {
+        await axios.post('/api/v1/reset/password', {
           userId: user.id,
           email: email,
           role: user.role

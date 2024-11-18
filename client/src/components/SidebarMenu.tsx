@@ -9,22 +9,34 @@ import { RiLoginBoxFill } from "react-icons/ri";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "@/Redux/authSlice";
-
+import { setRemove } from "@/Redux/contactSlice";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { toast } from "sonner";
+import axios from "@/api/axios";
 
 
 const SidebarMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/v1/logout');
+      dispatch(setRemove())
+      dispatch(logout());
+      navigate('/login');
+    } catch (error: any) {
+      console.log(error);
+      if(error.response.data.message)
+        toast.error(error.response.data.message);
+      else
+        toast.error('Failed to logout')
+    }
   };
 
   return (
