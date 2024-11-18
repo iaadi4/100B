@@ -66,11 +66,10 @@ class NoteService {
         }
     }
 
-    async getAll(pageNo: string, ascending: string) {
+    async getAll(ascending: string) {
         try {
+            if(!ascending) ascending = 'true';
             const notes = await prisma.note.findMany({
-                skip: (parseInt(pageNo)-1)*6,
-                take: 6,
                 orderBy: {
                     createdAt: ascending == 'true' ? 'asc' : 'desc'
                 }
@@ -84,6 +83,7 @@ class NoteService {
 
     async getNotesByTitle(pageNo: string, searchTitle: string, ascending: string) {
         try {
+            if(!ascending) ascending = 'true';
             const notes = await prisma.note.findMany({
                 skip: (parseInt(pageNo)-1)*6,
                 take: 6,
@@ -106,6 +106,7 @@ class NoteService {
 
     async getNotesWithFilter(pageNo: string, ascending: string, subject?: string, year?: string, branch?: string) {
         try {
+            if(!ascending) ascending = 'true';
             const filters: Ifilters = {};
             if(year) filters.year = year;
             if(subject) filters.subject = subject;
