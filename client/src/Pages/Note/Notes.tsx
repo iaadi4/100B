@@ -43,8 +43,6 @@ const Notes = () => {
     getAllNotes();
   }, [axiosPrivate])
 
-  console.log(notes);
-
   const filteredNotes = useMemo(() => {
     let filtered = notes;
 
