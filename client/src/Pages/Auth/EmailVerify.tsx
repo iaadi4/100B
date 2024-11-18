@@ -49,7 +49,7 @@ const EmailVerificationPage = () => {
 		setIsResending(true);
 		setResendTimer(60);
 		try {
-			const response = await axios.post("/api/v1/verify-otp", { id: data.id, mailTo: data.email });
+			const response = await axios.post("/api/v1/verify/otp", { id: data.id, mailTo: data.email });
 			setCheckOtp(response.data.otp);
 			toast.success("OTP has been sent!");
 

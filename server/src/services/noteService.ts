@@ -51,8 +51,13 @@ class NoteService {
         }
     }
 
-    async remove(filename: string) {
+    async remove(filename: string, noteId: string) {
         try {
+            await prisma.note.delete({
+                where: {
+                    id: parseInt(noteId)
+                }
+            });
             const params = {
                 Bucket: AWS_BUCKET_NAME,
                 Key: filename
