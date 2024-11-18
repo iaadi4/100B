@@ -20,7 +20,7 @@ const upload = async (req: Request, res: Response) => {
 
 const remove = async (req: Request, res: Response) => {
     try {
-        await noteService.remove(req.body.filename);
+        await noteService.remove(req.body.filename, req.body.noteId);
         return res.status(statusCode.SUCCESS).json({
             message: 'File deleted'
         })

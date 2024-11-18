@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 interface INote {
   id: number
+  s3Url: string
   userId: number
   createdAt: Date
   updatedAt: Date
@@ -45,7 +46,6 @@ const Notes = () => {
 
   const filteredNotes = useMemo(() => {
     let filtered = notes;
-
     if (year !== 'Year') filtered = filtered.filter((note) => note.year === year);
     if (branch !== 'Branch') filtered = filtered.filter((note) => note.branch === branch);
     if (subject !== 'Subject') filtered = filtered.filter((note) => note.subject === subject);
@@ -54,14 +54,13 @@ const Notes = () => {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((note) => note.title.toLowerCase().includes(query));
     }
-
     return filtered;
   }, [notes, branch, subject, year, searchQuery]);
 
   return (
     <div className="min-h-screen w-screen">
       <div className="mx-auto px-4 w-full">
-        <div className="flex w-full sticky top-0 z-50 pt-8 pb-5 bg-white">
+        <div className="flex w-full sticky top-0 z-50 pt-8 pb-5 px-10 bg-white">
           <p className="text-2xl font-bold text-orange-500">Agora</p>
           <div className="flex ml-auto">
             <Input
@@ -127,10 +126,14 @@ const Notes = () => {
           </div>
         </div>
         <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 mx-8 mt-10 overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 mx-8 mt-5 pt-5 overflow-y-auto">
             {filteredNotes.length > 0 ? (
               filteredNotes.map((note) => (
-                <Card key={note.id} className="bg-white/40 mb-5 border-orange-500 hover:bg-white/60 transition-all duration-500 backdrop-blur-lg flex flex-col">
+                <Card
+                  key={note.id}
+                  onClick={() => window.open(note.s3Url, '_blank')}
+                  className="bg-white/40 mb-5 border-orange-500 hover:bg-orange-500/10 hover:-translate-y-1 cursor-pointer transition-all duration-500 backdrop-blur-lg flex flex-col"
+                >
                   <CardHeader className="pb-2 space-y-1">
                     <div className="flex flex-col space-y-1">
                       <CardTitle className="text-sm font-bold text-black line-clamp-2">
