@@ -34,7 +34,7 @@ const remove = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
     try {
-        const notes = await noteService.getAll(req.body.pageNo, req.body.ascending);
+        const notes = await noteService.getAll(req.body.ascending);
         return res.status(statusCode.SUCCESS).json({
             notes
         })

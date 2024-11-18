@@ -29,7 +29,7 @@ const SidebarMenu = () => {
 
   return (
     <TooltipProvider>
-      <div className="flex justify-center h-screen w-[5%] min-w-[65px]">
+      <div className="flex justify-center h-screen w-[5%] min-w-[65px] sticky top-0 z-50">
         <div className="flex items-center flex-col h-full w-full">
           <Tooltip>
             <TooltipTrigger>

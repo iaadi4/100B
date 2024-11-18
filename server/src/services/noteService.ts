@@ -66,12 +66,10 @@ class NoteService {
         }
     }
 
-    async getAll(pageNo: string, ascending: string) {
+    async getAll(ascending: string) {
         try {
             if(!ascending) ascending = 'true';
             const notes = await prisma.note.findMany({
-                skip: (parseInt(pageNo)-1)*6,
-                take: 6,
                 orderBy: {
                     createdAt: ascending == 'true' ? 'asc' : 'desc'
                 }
