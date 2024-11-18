@@ -6,7 +6,7 @@ import socketSlice from "./socketSlice";
 import contactSlice from "./contactSlice";
 
 const socketTransform = createTransform(
-  (inboundState) => {
+  (inboundState: any) => {
     const { instance, ...rest } = inboundState;
     return rest;
   },
