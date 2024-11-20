@@ -4,6 +4,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface INote {
   id: number
@@ -21,12 +32,20 @@ interface INote {
 }
 
 const Notes = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [notes, setNotes] = useState<INote[]>([]);
   const [year, setYear] = useState<string>('Year');
   const [branch, setBranch] = useState<string>('Branch');
   const [subject, setSubject] = useState<string>('Subject');
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const axiosPrivate = useAxiosPrivate();
+
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteYear, setNoteYear] = useState("");
+  const [noteBranch, setNoteBranch] = useState("");
+  const [noteSubject, setNoteSubject] = useState("");
+  const [noteFile, setNoteFile] = useState<File | null>(null);
+  const [createNoteButtonLoading, setCreateNoteButtonLoading] = useState(false);
 
   useEffect(() => {
     const getAllNotes = async () => {
@@ -57,8 +76,43 @@ const Notes = () => {
     return filtered;
   }, [notes, branch, subject, year, searchQuery]);
 
+  const handleCreateNote = async () => {
+    try {
+      if (!noteTitle || !noteBranch || !noteYear || !noteFile) {
+        toast.error('Fill all the fields');
+      } else {
+        setCreateNoteButtonLoading(true);
+        const formData = new FormData();
+        formData.append('file', noteFile);
+        formData.append("title", noteTitle);
+        formData.append("year", noteYear);
+        formData.append("branch", noteBranch);
+        formData.append("subject", noteSubject);
+        const response = await axiosPrivate.post('/api/v1/upload/note', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        setNoteTitle("");
+        setNoteBranch("");
+        setNoteYear("");
+        setNoteSubject("");
+        setNoteFile(null);
+        setNotes((prev: any) => [...prev, response.data.response]);
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error.response.data.message)
+        toast.error(error.response.data.message);
+      else
+        toast.error('Failed to upload notes');
+    } finally {
+      setCreateNoteButtonLoading(false);
+    }
+  }
+
   return (
-    <div className="min-h-screen w-screen">
+    <div className="min-h-screen w-[calc(100%-4rem)]">
       <div className="mx-auto px-4 w-full">
         <div className="flex w-full sticky top-0 z-50 pt-8 pb-5 px-10 bg-white">
           <p className="text-2xl font-bold text-orange-500">Agora</p>
@@ -122,6 +176,106 @@ const Notes = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="border-orange-500/30 hover:bg-orange-500/60 hover:text-white">Create note</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Create Note</DialogTitle>
+                      <DialogDescription>
+                        Only pdf and images can be uploaded
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Input
+                          value={noteTitle}
+                          onChange={(e) => setNoteTitle(e.target.value)}
+                          placeholder="Note title"
+                          className="col-span-4 border-orange-500/30"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0])
+                              setNoteFile(e.target.files[0])
+                          }}
+                          placeholder="Select file to upload"
+                          className="col-span-4 border-orange-500/30 cursor-pointer hover:bg-orange-500/60 hover:text-white"
+                        />
+                      </div>
+                      <Select
+                        value={noteYear}
+                        onValueChange={setNoteYear}
+                      >
+                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white/95 border-orange-500/30 text-black">
+                          <SelectItem value="Year">Year</SelectItem>
+                          <SelectItem value="1">1</SelectItem>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={noteBranch}
+                        onValueChange={setNoteBranch}
+                      >
+                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                          <SelectValue placeholder="Branch" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white/95 border-orange-500/30 text-black">
+                          <SelectItem value="Branch">Branch</SelectItem>
+                          <SelectItem value="CSE DS&AI">CSE DS&AI</SelectItem>
+                          <SelectItem value="CSE">CSE</SelectItem>
+                          <SelectItem value="ECE">ECE</SelectItem>
+                          <SelectItem value="ECE IOT">ECE IOT</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={noteSubject}
+                        onValueChange={setNoteSubject}
+                      >
+                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                          <SelectValue placeholder="Subject" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white/95 border-orange-500/30 text-black">
+                          <SelectItem value="Subject">Subject</SelectItem>
+                          <SelectItem value="Analog">Analog</SelectItem>
+                          <SelectItem value="Python Programming">Python Programming</SelectItem>
+                          <SelectItem value="Electrical">Electrical</SelectItem>
+                          <SelectItem value="HS">HS</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <DialogFooter>
+                      {createNoteButtonLoading ? (
+                        <Button
+                          disabled
+                          type="submit"
+                          className="border border-orange-500/30 bg-white text-black hover:bg-orange-500/60 hover:text-white"
+                        >
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Create
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          className="border border-orange-500/30 bg-white text-black hover:bg-orange-500/60 hover:text-white"
+                          onClick={handleCreateNote}
+                        >
+                          Create
+                        </Button>
+                      )}
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
         </div>
@@ -175,7 +329,7 @@ const Notes = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
