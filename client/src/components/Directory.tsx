@@ -2,8 +2,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { IoMdPersonAdd } from "react-icons/io";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tooltip,TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { Loader2 } from "lucide-react";
 
 const Directory = ({ contact }: any) => {
     const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ const Directory = ({ contact }: any) => {
             console.log(response);
         } catch (error: any) {
             console.log(error);
-            if(error.response.data.message)
+            if (error.response.data.message)
                 toast.error(error.response.data.message);
             else
                 toast.error("Failed to add to contacts")
@@ -51,7 +52,7 @@ const Directory = ({ contact }: any) => {
             <div className="ml-auto mr-5 flex items-center">
                 {loading ? (
                     <div>
-
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     </div>
                 ) : (
                     <div>
