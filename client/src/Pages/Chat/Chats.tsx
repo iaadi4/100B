@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "../../components/ui/input";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import Contact from "../../components/Contact";
@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Message from "@/components/Message";
 import { toast } from "sonner";
 import io from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { setSocket, setOnlineUsers } from "@/Redux/socketSlice";
 
 interface Message {
@@ -41,7 +42,7 @@ const Chats = () => {
 
   //@ts-expect-error some socket incompatiablity
   useEffect(() => {
-    const socket = io('localhost:3000', {
+    const socket: Socket = io('localhost:3000', {
       query: {
         userId: user.id
       }
@@ -122,7 +123,6 @@ const Chats = () => {
         receiverId: selectedContact.contact[0].id
       })
       const newMessage = response.data.response;
-      console.log(newMessage);
       setMessages((prev: any) => [...prev, newMessage]);
       setMessage("");
     } catch (error: any) {
@@ -133,6 +133,15 @@ const Chats = () => {
         toast.error('Failed to send message');
     }
   }
+
+  const searchFilter = useMemo(() => {
+    let filtered = allUsers;
+    if (search.trim() && filtered.length > 0) {
+      const query = search.toLowerCase();
+      filtered = filtered.filter((user: any) => user.name.toLowerCase().includes(query));
+    }
+    return filtered;
+  }, [search, allUsers])
 
   useEffect(() => {
     lastMessageRef?.current?.scrollIntoView({ behavior: "smooth" });
@@ -177,7 +186,7 @@ const Chats = () => {
             <div>
               {selected == 1 ? (
                 <div>
-                  {conversations ? (
+                  {conversations.length > 0 ? (
                     conversations.map((conversation: any) => (
                       <Contact key={conversation.id} contact={conversation} selected={selected} />
                     ))
@@ -189,8 +198,8 @@ const Chats = () => {
                 </div>
               ) : (
                 <div>
-                  {allUsers ? (
-                    allUsers.map((user: any) => (
+                  {searchFilter.length > 0 ? (
+                    searchFilter.map((user: any) => (
                       <Directory key={user.id} contact={user} />
                     ))
                   ) : (
@@ -204,51 +213,57 @@ const Chats = () => {
           )}
         </div>
       </div>
-      <div className="flex h-full w-[70%] bg-slate-100 min-w-[600px] flex-col">
-        <div className="flex w-full h-[75px] bg-white mb-2">
-          <div className="flex h-full ml-8 items-center">
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="profilepic.png" />
-              <AvatarFallback>AA</AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="flex h-full mt-2 ml-5 flex-col">
-            <div className="text-black font-bold">
-              {selectedContact?.contact[0]?.name}
+      {selectedContact ? (
+        <div className="flex h-full w-[70%] bg-slate-100 min-w-[600px] flex-col">
+          <div className="flex w-full h-[75px] bg-white mb-2">
+            <div className="flex h-full ml-8 items-center">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="profilepic.png" />
+                <AvatarFallback>AA</AvatarFallback>
+              </Avatar>
             </div>
-            <div className="text-sm text-slate-700">ACTIVE NOW</div>
-          </div>
-          <div className="flex items-center ml-auto mr-8">
-            <div className="rounded-full cursor-pointer p-2 hover:bg-slate-100">
-              <EllipsisVertical />
-            </div>
-          </div>
-        </div>
-        <div className="w-full flex h-full overflow-y-auto">
-          <div className="flex flex-col ml-6 w-full">
-            {messages ? (
-              messages.map((message: any) => (
-                <div key={message.id} ref={lastMessageRef}>
-                  <Message message={message} />
-                </div>
-              ))
-            ) : (
-              <div className="flex items-center justify-center w-full h-full">
-                <p className="text-gray-500">No messages available</p>
+            <div className="flex h-full mt-2 ml-5 flex-col">
+              <div className="text-black font-bold">
+                {selectedContact?.contact[0]?.name}
               </div>
-            )}
+              <div className="text-sm text-slate-700">ACTIVE NOW</div>
+            </div>
+            <div className="flex items-center ml-auto mr-8">
+              <div className="rounded-full cursor-pointer p-2 hover:bg-slate-100">
+                <EllipsisVertical />
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex h-full overflow-y-auto">
+            <div className="flex flex-col ml-6 w-full">
+              {messages ? (
+                messages.map((message: any) => (
+                  <div key={message.id} ref={lastMessageRef}>
+                    <Message message={message} />
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center w-full h-full">
+                  <p className="text-gray-500">No messages available</p>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="w-full flex items-center justify-center h-[80px] bg-white">
+            <form action="submit" className="mx-8 h-10 w-full" onSubmit={handleSendingMessage}>
+              <Input
+                className="w-full"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </form>
           </div>
         </div>
-        <div className="w-full flex items-center justify-center h-[80px] bg-white">
-          <form action="submit" className="mx-8 h-10 w-full" onSubmit={handleSendingMessage}>
-            <Input
-              className="w-full"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </form>
+      ) : (
+        <div className="h-full w-full flex items-center justify-center">
+          <span className="text-lg p-2 bg-orange-500/80 px-5 rounded-full text-white">Select a contact to start conversation</span>
         </div>
-      </div>
+      )}
     </div>
   )
 }
