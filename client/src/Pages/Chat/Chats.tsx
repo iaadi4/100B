@@ -157,7 +157,7 @@ const Chats = () => {
           <div className="flex justify-center w-full">
             <Input
               className="mx-5 w-full rounded-lg bg-white"
-              placeholder="Search"
+              placeholder="Search directory"
               onChange={(e) => setSearch(e.target.value)}
               value={search}
             />
