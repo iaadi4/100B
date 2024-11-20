@@ -120,7 +120,7 @@ const Notes = () => {
             <Input
               type="text"
               placeholder="Search"
-              className="w-[300px] mx-10 bg-white/40 text-black placeholder-black hover:placeholder-white outline-none focus-within:outline-none focus:outline-none border-orange-500/30 hover:text-white hover:bg-orange-500/60 transition-all duration-300"
+              className="w-[300px] mx-10 bg-white/40 text-black placeholder-black hover:placeholder-white outline-none focus-within:outline-none focus:outline-none border-orange-500/60 hover:text-white hover:bg-orange-500/60 transition-all duration-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -130,7 +130,7 @@ const Notes = () => {
                   value={year}
                   onValueChange={setYear}
                 >
-                  <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                  <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 border-orange-500/30 text-black">
@@ -147,7 +147,7 @@ const Notes = () => {
                   value={branch}
                   onValueChange={setBranch}
                 >
-                  <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                  <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                     <SelectValue placeholder="Branch" />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 border-orange-500/30 text-black">
@@ -164,7 +164,7 @@ const Notes = () => {
                   value={subject}
                   onValueChange={setSubject}
                 >
-                  <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                  <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                     <SelectValue placeholder="Subject" />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 border-orange-500/30 text-black">
@@ -179,11 +179,11 @@ const Notes = () => {
               <div>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-orange-500/30 hover:bg-orange-500/60 hover:text-white">Create note</Button>
+                    <Button variant="outline" className="border-orange-500/60 hover:bg-orange-500/60 hover:text-white">Create note</Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                      <DialogTitle>Create Note</DialogTitle>
+                      <DialogTitle className="text-orange-500">Create Note</DialogTitle>
                       <DialogDescription>
                         Only pdf and images can be uploaded
                       </DialogDescription>
@@ -194,7 +194,7 @@ const Notes = () => {
                           value={noteTitle}
                           onChange={(e) => setNoteTitle(e.target.value)}
                           placeholder="Note title"
-                          className="col-span-4 border-orange-500/30"
+                          className="col-span-4 border-orange-500/60"
                         />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
@@ -205,14 +205,14 @@ const Notes = () => {
                               setNoteFile(e.target.files[0])
                           }}
                           placeholder="Select file to upload"
-                          className="col-span-4 border-orange-500/30 cursor-pointer hover:bg-orange-500/60 hover:text-white"
+                          className="col-span-4 border-orange-500/60 cursor-pointer hover:bg-orange-500/60 hover:text-white"
                         />
                       </div>
                       <Select
                         value={noteYear}
                         onValueChange={setNoteYear}
                       >
-                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                        <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent className="bg-white/95 border-orange-500/30 text-black">
@@ -227,7 +227,7 @@ const Notes = () => {
                         value={noteBranch}
                         onValueChange={setNoteBranch}
                       >
-                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                        <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                           <SelectValue placeholder="Branch" />
                         </SelectTrigger>
                         <SelectContent className="bg-white/95 border-orange-500/30 text-black">
@@ -242,10 +242,10 @@ const Notes = () => {
                         value={noteSubject}
                         onValueChange={setNoteSubject}
                       >
-                        <SelectTrigger className="bg-white/40 border-orange-500/30 hover:text-white hover:bg-orange-500/60">
+                        <SelectTrigger className="bg-white/40 border-orange-500/60 hover:text-white hover:bg-orange-500/60">
                           <SelectValue placeholder="Subject" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white/95 border-orange-500/30 text-black">
+                        <SelectContent className="bg-white/95 border-orange-500/60 text-black">
                           <SelectItem value="Subject">Subject</SelectItem>
                           <SelectItem value="Analog">Analog</SelectItem>
                           <SelectItem value="Python Programming">Python Programming</SelectItem>

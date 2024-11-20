@@ -186,7 +186,7 @@ const Chats = () => {
             <div>
               {selected == 1 ? (
                 <div>
-                  {conversations.length > 0 ? (
+                  {conversations?.length > 0 ? (
                     conversations.map((conversation: any) => (
                       <Contact key={conversation.id} contact={conversation} selected={selected} />
                     ))
@@ -198,7 +198,7 @@ const Chats = () => {
                 </div>
               ) : (
                 <div>
-                  {searchFilter.length > 0 ? (
+                  {searchFilter?.length > 0 ? (
                     searchFilter.map((user: any) => (
                       <Directory key={user.id} contact={user} />
                     ))
