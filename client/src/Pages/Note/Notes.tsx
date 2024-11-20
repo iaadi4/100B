@@ -112,7 +112,7 @@ const Notes = () => {
   }
 
   return (
-    <div className="min-h-screen w-screen">
+    <div className="min-h-screen w-[calc(100%-4rem)]">
       <div className="mx-auto px-4 w-full">
         <div className="flex w-full sticky top-0 z-50 pt-8 pb-5 px-10 bg-white">
           <p className="text-2xl font-bold text-orange-500">Agora</p>

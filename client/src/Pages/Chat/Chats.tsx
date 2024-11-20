@@ -149,7 +149,7 @@ const Chats = () => {
 
   return (
     <div className="flex h-screen grow">
-      <div className="h-full w-[30%] bg-slate-100 min-w-[350px]">
+      <div className="h-full w-[30%] bg-slate-100 min-w-[400px]">
         <div className="sticky top-0 z-10 flex flex-col w-full">
           <div className="text-2xl font-semibold m-4 ml-10 text-black">
             Chats
