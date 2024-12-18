@@ -31,27 +31,22 @@ class PollService {
         }
     }
 
-    async remove(pollId: string) {
+    async remove(pollId: string, userId: number) {
         try {
             const pollIdInt = parseInt(pollId);
-            if (isNaN(pollIdInt)) {
-                throw new Error("Invalid poll ID");
-            }
             const poll = await prisma.poll.findUnique({
                 where: { id: pollIdInt },
             });
-            if (!poll) {
+            if (!poll)
                 throw new Error("Poll not found");
-            }
-            await prisma.vote.deleteMany({
-                where: { pollId: pollIdInt },
-            });
+            if(poll.userId != userId)
+                throw new Error("Unauthorized action");
             await prisma.poll.delete({
                 where: { id: pollIdInt },
             });
             return true;
         } catch (error) {
-            console.error('Error in service layer:', error);
+            console.error('Something went wrong in the service layer');
             throw error;
         }
     }

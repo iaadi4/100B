@@ -27,7 +27,7 @@ const remove = async (req: Request, res: Response) => {
         if (!pollId) {
             return res.status(400).json({ message: "Poll ID is required" });
         }
-        await pollService.remove(pollId);
+        await pollService.remove(pollId, req.user.id);
         return res.status(200).json({
             message: "Poll removed",
         });
@@ -83,7 +83,7 @@ const getPoll = async (req: Request, res: Response) => {
 
 const getPolls = async (req: Request, res: Response) => {
     try {
-        const { pageNo } = req.query; 
+        const { pageNo } = req.query;
         const pageNumber = parseInt(pageNo as string, 10);
         if (!pageNo || isNaN(pageNumber)) {
             return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
