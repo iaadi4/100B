@@ -5,7 +5,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowDownToLine, Forward } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -285,22 +285,40 @@ const Notes = () => {
               filteredNotes.map((note) => (
                 <Card
                   key={note.id}
-                  onClick={() => window.open(note.s3Url, '_blank')}
                   className="bg-white/40 mb-5 border-orange-500 hover:bg-orange-500/10 hover:-translate-y-1 cursor-pointer transition-all duration-500 backdrop-blur-lg flex flex-col"
                 >
                   <CardHeader className="pb-2 space-y-1">
-                    <div className="flex flex-col space-y-1">
-                      <CardTitle className="text-sm font-bold text-black line-clamp-2">
-                        {note.title}
-                      </CardTitle>
-                      <div className="flex items-center space-x-1">
-                        <span className="relative inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full
+                    <div className="flex">
+                      <div className="flex flex-col space-y-1">
+                        <CardTitle className="text-sm font-bold text-black line-clamp-2">
+                          {note.title}
+                        </CardTitle>
+                        <div className="flex items-center space-x-1">
+                          <span className="relative inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full
                           before:absolute before:inset-0 before:bg-gradient-to-r before:from-orange-500/10 before:to-orange-800/10 before:rounded-full
                           border border-orange-500/30 hover:border-orange-500/50 transition-colors duration-300">
-                          <span className="relative z-10 bg-gradient-to-r from-orange-200 to-orange-400 bg-clip-text text-black">
-                            {note.subject}
+                            <span className="relative z-10 bg-gradient-to-r from-orange-200 to-orange-400 bg-clip-text text-black">
+                              {note.subject}
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                      </div>
+                      <div className="flex ml-auto">
+                        <div
+                          className="p-2 rounded-full mr-2 hover:bg-orange-500 h-fit"
+                          onClick={() => {
+                            navigator.clipboard.writeText(note.s3Url)
+                            toast.success("Link copied to clipboard")
+                          }}
+                        >
+                          <Forward className="h-5 w-5" />
+                        </div>
+                        <div
+                          className="p-2 rounded-full hover:bg-orange-500 h-fit"
+                          onClick={() => window.open(note.s3Url, '_blank')}
+                        >
+                          <ArrowDownToLine className="h-5 w-5" />
+                        </div>
                       </div>
                     </div>
                   </CardHeader>
