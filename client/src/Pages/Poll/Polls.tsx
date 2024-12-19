@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import Poll from "@/components/Poll";
 import PollModel from "@/models/PollModel";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import {
   Select,
   SelectContent,
@@ -24,8 +24,8 @@ import {
 
 const Polls = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [year, setYear] = useState("");
-  const [branch, setBranch] = useState("");
+  const [year, setYear] = useState("Year");
+  const [branch, setBranch] = useState("Branch");
   const [polls, setPolls] = useState<PollModel[] | null>();
 
   const axiosPrivate = useAxiosPrivate();
@@ -49,10 +49,21 @@ const Polls = () => {
     getAllPoles();
   }, [axiosPrivate])
 
+  const filteredPolls = useMemo(() => {
+    let filtered = polls;
+    if(year != "Year") filtered = filtered?.filter((poll) => poll.year === year);
+    if(branch != "Branch") filtered = filtered?.filter((poll) => poll.branch === branch);
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered?.filter((poll) => poll.title.toLowerCase().includes(query));
+    }
+    return filtered;
+  }, [polls, year, branch, searchQuery]);
+
   return (
     <div className="min-h-screen w-[calc(100%-4rem)]">
-      <div className="mx-auto px-4 w-full">
-        <div className="flex w-full sticky top-0 z-50 pt-8 pb-5 px-10 bg-white">
+      <div className="mx-auto px-4 w-full bg-white sticky top-0 z-50">
+        <div className="flex w-full pt-8 pb-5 px-10">
           <p className="text-2xl font-bold text-orange-500">Agora</p>
           <div className="flex ml-auto">
             <Input
@@ -101,7 +112,12 @@ const Polls = () => {
             <div className="ml-4">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="border-orange-500/60 hover:bg-orange-500/60 hover:text-white">Create Poll</Button>
+                  <Button
+                    variant="outline"
+                    className="border-orange-500/60 hover:bg-orange-500/60 hover:text-white text-gray-700"
+                  >
+                    Create Poll
+                  </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
@@ -120,15 +136,13 @@ const Polls = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-full overflow-y-auto flex">
-        <div>
-          {polls && polls.map((poll) => (
-            <Poll poll={poll} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-x-10 gap-y-5 mx-8 py-5 overflow-y-auto">
+        {filteredPolls && filteredPolls.map((poll) => (
+          <Poll key={poll.id} poll={poll} />
+        ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default Polls;

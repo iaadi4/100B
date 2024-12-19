@@ -123,7 +123,7 @@ class PollService {
         if(!ascending) ascending = 'true';
         const polls = await prisma.poll.findMany({
             skip: (parseInt(pageNo) - 1) * 4,
-            take: 4,
+            take: 10,
             include: { votes: true },
         });
         return polls.map((poll) => ({
@@ -135,6 +135,7 @@ class PollService {
             votes: poll.votes.map((vote) => ({
                 id: vote.id,
                 option: vote.option,
+                userId: vote.userId
             })),
         }));
     }

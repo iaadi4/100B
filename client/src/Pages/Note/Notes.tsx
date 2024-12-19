@@ -179,7 +179,7 @@ const Notes = () => {
               <div>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-orange-500/60 hover:bg-orange-500/60 hover:text-white">Create note</Button>
+                    <Button variant="outline" className="border-orange-500/60 hover:bg-orange-500/60 hover:text-white text-gray-700">Create note</Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

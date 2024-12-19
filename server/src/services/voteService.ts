@@ -26,21 +26,6 @@ class VoteService {
       throw error;
     }
   }
-
-  async deleteVote(voteId: number) {
-    try {
-      const deletedVote = await prisma.vote.delete({
-        where: {
-          id: voteId,
-        },
-      });
-      return deletedVote;
-    } catch (error) {
-      console.error('Error in VoteService.deleteVote:', error);
-      throw error;
-    }
-  }
-
 }
 
 export default VoteService;

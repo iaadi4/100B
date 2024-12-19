@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { toast } from "sonner";
 import PollModel from "@/models/PollModel";
+import { useSelector } from 'react-redux';
 
 interface PollComponentProps {
   poll: PollModel;
@@ -13,11 +14,21 @@ const Poll: React.FC<PollComponentProps> = ({ poll }) => {
   const [localVoteCounts, setLocalVoteCounts] = useState(poll.voteCounts);
   const axiosPrivate = useAxiosPrivate();
 
+  const userId = useSelector((state: any) => state.auth.userData.id);
+
+  useEffect(() => {
+    const checkHasVotes = () => {
+      poll.votes.map((vote: any) => vote.userId == userId ? setHasVoted(true) : null)
+    }
+    checkHasVotes();
+  }, [userId, poll])
+
   const handleVote = async (option: string) => {
     if (!hasVoted && !isPollClosed()) {
       try {
-        await axiosPrivate.post(`/api/v1/polls/${poll.id}/vote`, {
-          option: option
+        await axiosPrivate.post(`/api/v1/vote`, {
+          option: option,
+          pollId: poll.id
         });
         setSelectedOption(option);
         setHasVoted(true);
@@ -51,13 +62,20 @@ const Poll: React.FC<PollComponentProps> = ({ poll }) => {
     return Math.round((votes / total) * 100);
   };
 
+  const formatDateTime = (date: string) => {
+    return new Date(date).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
+  };
+
   return (
-    <div className="w-full max-w-2xl mx-auto my-4 rounded-lg bg-white/95 p-6 shadow-md border border-orange-500/20">
+    <div className="w-full max-w-2xl min-w-[300px] mx-auto my-4 rounded-lg bg-white/95 p-6 border border-orange-500/20">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-orange-500">{poll.title}</h2>
         <div className="mt-2 text-sm text-gray-600">
           <p className="font-medium">{poll.branch}</p>
-          <p>Year: {poll.year}</p>
+          {poll.year && <p>Year: {poll.year}</p>}
         </div>
       </div>
 
@@ -72,10 +90,9 @@ const Poll: React.FC<PollComponentProps> = ({ poll }) => {
             <div className="relative">
               <div className={`
                 p-4 rounded-lg border relative overflow-hidden transition-all duration-300
-                ${selectedOption === option
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'border-orange-500/30 hover:border-orange-500/60 hover:bg-orange-50/50'}
-                ${(hasVoted || isPollClosed()) ? 'cursor-default' : 'cursor-pointer'}
+                ${(hasVoted || isPollClosed()) ? 'cursor-default border-orange-500/40'
+                  : 'cursor-pointer border-orange-500/30 hover:border-orange-500/60 hover:bg-orange-500/50'
+                }
               `}>
                 {(hasVoted || isPollClosed()) && (
                   <div
@@ -102,9 +119,9 @@ const Poll: React.FC<PollComponentProps> = ({ poll }) => {
 
       <div className="mt-4 text-sm text-gray-500">
         {isPollClosed() ? (
-          <p>Poll closed on {new Date(poll.closesAt).toLocaleDateString()}</p>
+          <p>Poll closed on {formatDateTime(poll.closesAt)}</p>
         ) : (
-          <p>Closes on {new Date(poll.closesAt).toLocaleDateString()}</p>
+          <p>Closes on {formatDateTime(poll.closesAt)}</p>
         )}
         <p className="mt-1">Total votes: {getTotalVotes()}</p>
       </div>
