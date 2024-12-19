@@ -7,4 +7,4 @@ const Confession = () => {
   )
 }
 
-export default Confession
+export default Confession;
