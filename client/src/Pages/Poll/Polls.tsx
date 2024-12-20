@@ -43,7 +43,6 @@ const Polls = () => {
   const [pollBranch, setPollBranch] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [optionCount, setOptionCount] = useState(2);
-
   const [pageNo, setPageNo] = useState(1);
 
   const axiosPrivate = useAxiosPrivate();
@@ -51,14 +50,15 @@ const Polls = () => {
   useEffect(() => {
     const getAllPoles = async () => {
       try {
+        console.log(searchQuery);
         const response = await axiosPrivate.get('/api/v1/filter/polls', {
           params: {
             pageNo: pageNo,
             branch: branch == "Branch" ? "" : branch,
-            year: year == "Year" ? "" : year
+            year: year == "Year" ? "" : year,
+            searchTitle: searchQuery
           }
         });
-        console.log(response.data.polls);
         setPolls(response.data.polls);
       } catch (error: any) {
         if (error.response.data.message)
@@ -68,7 +68,7 @@ const Polls = () => {
       }
     }
     getAllPoles();
-  }, [axiosPrivate, pageNo, branch, year]);
+  }, [axiosPrivate, pageNo, branch, year, searchQuery]);
 
   useEffect(() => {
     const clearInputs = () => {

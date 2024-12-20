@@ -102,13 +102,12 @@ const getPolls = async (req: Request, res: Response) => {
 
 const getPollWithFilters = async (req: Request, res: Response) => {
     try {
-        const { year, branch, pageNo } = req.query;
+        const { year, branch, pageNo, searchTitle, ascending } = req.query;
         const pageNumber = parseInt(pageNo as string, 10);
         if (!pageNo || isNaN(pageNumber)) {
             return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
         }
-        console.log(year, branch);
-        const polls = await pollService.getPollWithFilters(pageNo as string, req.query.ascending as string , year as string, branch as string);
+        const polls = await pollService.getPollsByFilters(pageNo as string, ascending as string, searchTitle as string, year as string, branch as string);
         return res.status(statusCode.SUCCESS).json({
             polls
         })
@@ -120,19 +119,6 @@ const getPollWithFilters = async (req: Request, res: Response) => {
     }
 }
 
-const getPollsByTitle = async (req: Request, res: Response) => {
-    try {
-        const polls = await pollService.getPollsByTitle(req.body.pageNo, req.body.ascending, req.body.searchTitle);
-        return res.status(statusCode.SUCCESS).json({
-            polls
-        })
-    } catch (error) {
-        return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to fetch polls",
-            error: error
-        });
-    }
-}
 
 export default {
     create,
@@ -140,7 +126,6 @@ export default {
     closePoll,
     extendPoll,
     getPolls,
-    getPollsByTitle,
     getPoll,
     getPollWithFilters
 }

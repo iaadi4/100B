@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 interface Ifilters {
     year?: string
     branch?: string
+    title?: {}
 }
 
 class PollService {
@@ -26,7 +27,7 @@ class PollService {
                     include: { votes: true }
                 })
             }
-            const poll = this.getPoll(String(response.id));
+            const poll =  await this.getPoll(String(response.id));
             return poll;
         } catch (error) {
             console.log('Something went wrong in the service layer');
@@ -95,20 +96,20 @@ class PollService {
                 },
                 include: { votes: true }
             });
-    
+
             if (!poll) return null;
 
             const voteCounts = poll.options.reduce((acc: { [key: string]: number }, option: string) => {
                 acc[option] = 0;
                 return acc;
             }, {});
-    
+
             poll.votes.forEach((vote: any) => {
                 if (voteCounts[vote.option] !== undefined) {
                     voteCounts[vote.option]++;
                 }
             });
-    
+
             return {
                 ...poll,
                 voteCounts,
@@ -116,40 +117,6 @@ class PollService {
             };
         } catch (error) {
             console.log('Something went wrong in the service layer', error);
-            throw error;
-        }
-    }
-    
-
-    async getPollWithFilters(pageNo: string, ascending: string, year?: string, branch?: string) {
-        try {
-            const filters: Ifilters = {};
-            if (year) filters.year = year;
-            if (branch) filters.branch = branch;
-            if (!ascending) ascending = 'false';
-            const polls = await prisma.poll.findMany({
-                skip: (parseInt(pageNo) - 1) * 4,
-                take: 4,
-                where: filters,
-                orderBy: {
-                    createdAt: ascending == 'true' ? 'asc' : 'desc'
-                },
-                include: { votes: true }
-            })
-            return polls.map((poll) => ({
-                ...poll,
-                voteCounts: poll.votes.reduce((acc: { [key: string]: number }, vote) => {
-                    acc[vote.option] = (acc[vote.option] || 0) + 1;
-                    return acc;
-                }, {}),
-                votes: poll.votes.map((vote) => ({
-                    id: vote.id,
-                    option: vote.option,
-                    userId: vote.userId
-                })),
-            }));
-        } catch (error) {
-            console.log('Something went wrong in the service layer');
             throw error;
         }
     }
@@ -175,24 +142,35 @@ class PollService {
         }));
     }
 
-
-    async getPollsByTitle(pageNo: string, ascending: string, searchTitle: string) {
+    async getPollsByFilters(pageNo: string, ascending: string, searchTitle?: string, year?: string, branch?: string) {
         try {
             if (!ascending) ascending = 'false';
+            const filters: Ifilters = {
+                title: { contains: searchTitle, mode: 'insensitive' },
+            };
+            if (year) filters.year = year;
+            if (branch) filters.branch = branch;
             const polls = await prisma.poll.findMany({
                 skip: (parseInt(pageNo) - 1) * 4,
                 take: 4,
-                where: {
-                    title: {
-                        contains: searchTitle,
-                        mode: 'insensitive'
-                    }
-                },
+                where: filters,
                 orderBy: {
                     createdAt: ascending == 'true' ? 'asc' : 'desc'
-                }
+                },
+                include: { votes: true }
             })
-            return polls;
+            return polls.map((poll) => ({
+                ...poll,
+                voteCounts: poll.votes.reduce((acc: { [key: string]: number }, vote) => {
+                    acc[vote.option] = (acc[vote.option] || 0) + 1;
+                    return acc;
+                }, {}),
+                votes: poll.votes.map((vote) => ({
+                    id: vote.id,
+                    option: vote.option,
+                    userId: vote.userId
+                })),
+            }));
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;

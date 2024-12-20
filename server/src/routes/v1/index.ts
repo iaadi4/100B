@@ -51,7 +51,6 @@ router.get('/poll', verifyJwt, pollController.getPoll);
 router.delete('/poll', verifyJwt, pollController.remove);
 router.get('/polls', verifyJwt, pollController.getPolls);
 router.get('/filter/polls', verifyJwt, pollController.getPollWithFilters);
-router.get('/search/polls', verifyJwt, pollController.getPollsByTitle);
 router.patch('/close/poll', verifyJwt, pollController.closePoll);
 router.patch('/extend/poll', verifyJwt, pollController.extendPoll);
 
