@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,23 +21,44 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const Polls = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [year, setYear] = useState("Year");
   const [branch, setBranch] = useState("Branch");
   const [polls, setPolls] = useState<PollModel[] | null>();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [pollTitle, setPollTitle] = useState("");
+  const [pollYear, setPollYear] = useState("");
+  const [pollBranch, setPollBranch] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [optionCount, setOptionCount] = useState(2);
+
+  const [pageNo, setPageNo] = useState(1);
 
   const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     const getAllPoles = async () => {
       try {
-        const response = await axiosPrivate.get('/api/v1/polls', {
+        const response = await axiosPrivate.get('/api/v1/filter/polls', {
           params: {
-            pageNo: 1
+            pageNo: pageNo,
+            branch: branch == "Branch" ? "" : branch,
+            year: year == "Year" ? "" : year
           }
         });
+        console.log(response.data.polls);
         setPolls(response.data.polls);
       } catch (error: any) {
         if (error.response.data.message)
@@ -47,18 +68,79 @@ const Polls = () => {
       }
     }
     getAllPoles();
-  }, [axiosPrivate])
+  }, [axiosPrivate, pageNo, branch, year]);
 
-  const filteredPolls = useMemo(() => {
-    let filtered = polls;
-    if(year != "Year") filtered = filtered?.filter((poll) => poll.year === year);
-    if(branch != "Branch") filtered = filtered?.filter((poll) => poll.branch === branch);
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered?.filter((poll) => poll.title.toLowerCase().includes(query));
+  useEffect(() => {
+    const clearInputs = () => {
+      setPollTitle("");
+      setPollYear("");
+      setPollBranch("");
+      setOptions(["", "", "", ""]);
+      setOptionCount(2);
     }
-    return filtered;
-  }, [polls, year, branch, searchQuery]);
+    clearInputs();
+  }, [isDialogOpen])
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index] = value;
+    setOptions(newOptions);
+  };
+
+  const handleAddOption = () => {
+    if (optionCount < 4) {
+      setOptionCount(optionCount + 1);
+    }
+  };
+
+  const handleRemoveOption = () => {
+    if (optionCount > 2) {
+      setOptionCount(optionCount - 1);
+      const newOptions = [...options];
+      newOptions[optionCount - 1] = "";
+      setOptions(newOptions);
+    }
+  };
+
+  const handleCreatePoll = async () => {
+    const filteredOptions = options.slice(0, optionCount).filter(opt => opt.trim() !== "");
+
+    if (filteredOptions.length < 2) {
+      toast.error("At least 2 options are required");
+      return;
+    }
+
+    if (filteredOptions.length !== optionCount) {
+      toast.error("All added options must have values");
+      return;
+    }
+
+    try {
+      const response = await axiosPrivate.post('/api/v1/poll', {
+        title: pollTitle.trim(),
+        year: pollYear === "Year" ? null : pollYear,
+        branch: pollBranch === "Branch" ? null : pollBranch,
+        options: filteredOptions,
+        closesAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      });
+      console.log(response.data.response);
+      setPolls(prev => prev ? [response.data.response, ...prev] : [response.data.response]);
+      setPollTitle("");
+      setPollYear("");
+      setPollBranch("");
+      setOptions(["", "", "", ""]);
+      setOptionCount(2);
+      setIsDialogOpen(false);
+
+      toast.success("Poll created successfully!");
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to create poll");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen w-[calc(100%-4rem)]">
@@ -110,7 +192,7 @@ const Polls = () => {
               </div>
             </div>
             <div className="ml-4">
-              <Dialog>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
@@ -127,8 +209,80 @@ const Polls = () => {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Input
+                        placeholder="Poll Title"
+                        value={pollTitle}
+                        onChange={(e) => setPollTitle(e.target.value)}
+                        className="border-orange-500/30 focus:border-orange-500"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Select value={pollYear} onValueChange={setPollYear}>
+                        <SelectTrigger className="border-orange-500/30 placeholder-text-gray">
+                          <SelectValue placeholder="Year (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Year">Year</SelectItem>
+                          <SelectItem value="1">1</SelectItem>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={pollBranch} onValueChange={setPollBranch}>
+                        <SelectTrigger className="border-orange-500/30">
+                          <SelectValue placeholder="Branch (optional)" className="placeholder-gray-500" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Branch">Branch</SelectItem>
+                          <SelectItem value="CSE DS&AI">CSE DS&AI</SelectItem>
+                          <SelectItem value="CSE">CSE</SelectItem>
+                          <SelectItem value="ECE">ECE</SelectItem>
+                          <SelectItem value="ECE IOT">ECE IOT</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      {Array.from({ length: optionCount }).map((_, index) => (
+                        <Input
+                          key={index}
+                          placeholder={`Option ${index + 1}`}
+                          value={options[index]}
+                          onChange={(e) => handleOptionChange(index, e.target.value)}
+                          className="border-orange-500/30 focus:border-orange-500"
+                        />
+                      ))}
+                    </div>
+                    <div className="flex justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleRemoveOption}
+                        disabled={optionCount <= 2}
+                        className="border-orange-500/30 hover:bg-orange-500/60 hover:text-white"
+                      >
+                        Remove Option
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleAddOption}
+                        disabled={optionCount >= 4}
+                        className="border-orange-500/30 hover:bg-orange-500/60 hover:text-white"
+                      >
+                        Add Option
+                      </Button>
+                    </div>
                   </div>
                   <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={handleCreatePoll}
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                    >
+                      Create Poll
+                    </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -137,9 +291,46 @@ const Polls = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-x-10 gap-y-5 mx-8 py-5 overflow-y-auto">
-        {filteredPolls && filteredPolls.map((poll) => (
+        {polls && polls.map((poll) => (
           <Poll key={poll.id} poll={poll} />
         ))}
+      </div>
+      <div className="mb-10 mt-4">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                className="hover:bg-orange-400 cursor-pointer"
+                onClick={() => setPageNo((prev) => prev - 1 < 1 ? 1 : prev - 1)}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                className="hover:bg-orange-400 cursor-pointer"
+                onClick={() => setPageNo(1)}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                className="hover:bg-orange-400 cursor-pointer"
+                onClick={() => setPageNo(2)}
+              >
+                2
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext
+                className="hover:bg-orange-400 cursor-pointer"
+                onClick={() => setPageNo((prev) => prev + 1)}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

@@ -102,8 +102,13 @@ const getPolls = async (req: Request, res: Response) => {
 
 const getPollWithFilters = async (req: Request, res: Response) => {
     try {
-        const { year, branch, pageNo } = req.body;
-        const polls = await pollService.getPollWithFilters(pageNo, req.body.ascending, year, branch);
+        const { year, branch, pageNo } = req.query;
+        const pageNumber = parseInt(pageNo as string, 10);
+        if (!pageNo || isNaN(pageNumber)) {
+            return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
+        }
+        console.log(year, branch);
+        const polls = await pollService.getPollWithFilters(pageNo as string, req.query.ascending as string , year as string, branch as string);
         return res.status(statusCode.SUCCESS).json({
             polls
         })

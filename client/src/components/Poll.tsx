@@ -70,11 +70,11 @@ const Poll: React.FC<PollComponentProps> = ({ poll }) => {
   };
 
   return (
-    <div className="w-full max-w-2xl min-w-[300px] mx-auto my-4 rounded-lg bg-white/95 p-6 border border-orange-500/20">
+    <div className="w-full max-w-2xl min-w-[300px] mx-auto my-4 rounded-lg bg-white/95 p-6 border border-orange-500/40">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-orange-500">{poll.title}</h2>
         <div className="mt-2 text-sm text-gray-600">
-          <p className="font-medium">{poll.branch}</p>
+          {poll.branch && <p className="font-medium">Branch: {poll.branch}</p>}
           {poll.year && <p>Year: {poll.year}</p>}
         </div>
       </div>
