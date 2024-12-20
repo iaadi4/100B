@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 interface Ifilters {
     year?: string
     branch?: string
+    title?: {}
 }
 
 class PollService {
@@ -17,45 +18,43 @@ class PollService {
                 const closesAt = new Date();
                 closesAt.setHours(closesAt.getHours() + 24);
                 response = await prisma.poll.create({
-                    data: { ...data, userId, closesAt }
+                    data: { ...data, userId, closesAt },
+                    include: { votes: true }
                 })
             } else {
                 response = await prisma.poll.create({
-                    data: { ...data, userId }
+                    data: { ...data, userId },
+                    include: { votes: true }
                 })
             }
-            return response;
+            const poll =  await this.getPoll(String(response.id));
+            return poll;
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;
         }
     }
 
-    async remove(pollId: string) {
+    async remove(pollId: string, userId: number) {
         try {
             const pollIdInt = parseInt(pollId);
-            if (isNaN(pollIdInt)) {
-                throw new Error("Invalid poll ID");
-            }
             const poll = await prisma.poll.findUnique({
                 where: { id: pollIdInt },
             });
-            if (!poll) {
+            if (!poll)
                 throw new Error("Poll not found");
-            }
-            await prisma.vote.deleteMany({
-                where: { pollId: pollIdInt },
-            });
+            if (poll.userId != userId)
+                throw new Error("Unauthorized action");
             await prisma.poll.delete({
                 where: { id: pollIdInt },
             });
             return true;
         } catch (error) {
-            console.error('Error in service layer:', error);
+            console.error('Something went wrong in the service layer');
             throw error;
         }
     }
-    
+
     async closePoll(pollId: string) {
         try {
             const closesAt = new Date();
@@ -94,41 +93,39 @@ class PollService {
             const poll = await prisma.poll.findFirst({
                 where: {
                     id: parseInt(pollId)
+                },
+                include: { votes: true }
+            });
+
+            if (!poll) return null;
+
+            const voteCounts = poll.options.reduce((acc: { [key: string]: number }, option: string) => {
+                acc[option] = 0;
+                return acc;
+            }, {});
+
+            poll.votes.forEach((vote: any) => {
+                if (voteCounts[vote.option] !== undefined) {
+                    voteCounts[vote.option]++;
                 }
-            })
-            return poll;
+            });
+
+            return {
+                ...poll,
+                voteCounts,
+                votes: poll.votes || []
+            };
         } catch (error) {
             console.log('Something went wrong in the service layer', error);
             throw error;
         }
     }
 
-    async getPollWithFilters(pageNo: string, ascending: string, year?: string, branch?: string) {
-        try {
-            const filters: Ifilters = {};
-            if (year) filters.year = year;
-            if (branch) filters.branch = branch;
-            if(!ascending) ascending = 'true';
-            const polls = await prisma.poll.findMany({
-                skip: (parseInt(pageNo) - 1) * 4,
-                take: 4,
-                where: filters,
-                orderBy: {
-                    createdAt: ascending == 'true' ? 'asc' : 'desc'
-                }
-            })
-            return polls;
-        } catch (error) {
-            console.log('Something went wrong in the service layer');
-            throw error;
-        }
-    }
-
     async getPolls(pageNo: string, ascending: string) {
-        if(!ascending) ascending = 'true';
+        if (!ascending) ascending = 'false';
         const polls = await prisma.poll.findMany({
             skip: (parseInt(pageNo) - 1) * 4,
-            take: 4,
+            take: 10,
             include: { votes: true },
         });
         return polls.map((poll) => ({
@@ -140,28 +137,40 @@ class PollService {
             votes: poll.votes.map((vote) => ({
                 id: vote.id,
                 option: vote.option,
+                userId: vote.userId
             })),
         }));
     }
 
-
-    async getPollsByTitle(pageNo: string, ascending: string, searchTitle: string) {
+    async getPollsByFilters(pageNo: string, ascending: string, searchTitle?: string, year?: string, branch?: string) {
         try {
-            if(!ascending) ascending = 'true';
+            if (!ascending) ascending = 'false';
+            const filters: Ifilters = {
+                title: { contains: searchTitle, mode: 'insensitive' },
+            };
+            if (year) filters.year = year;
+            if (branch) filters.branch = branch;
             const polls = await prisma.poll.findMany({
                 skip: (parseInt(pageNo) - 1) * 4,
                 take: 4,
-                where: {
-                    title: {
-                        contains: searchTitle,
-                        mode: 'insensitive'
-                    }
-                },
+                where: filters,
                 orderBy: {
                     createdAt: ascending == 'true' ? 'asc' : 'desc'
-                }
+                },
+                include: { votes: true }
             })
-            return polls;
+            return polls.map((poll) => ({
+                ...poll,
+                voteCounts: poll.votes.reduce((acc: { [key: string]: number }, vote) => {
+                    acc[vote.option] = (acc[vote.option] || 0) + 1;
+                    return acc;
+                }, {}),
+                votes: poll.votes.map((vote) => ({
+                    id: vote.id,
+                    option: vote.option,
+                    userId: vote.userId
+                })),
+            }));
         } catch (error) {
             console.log('Something went wrong in the service layer');
             throw error;

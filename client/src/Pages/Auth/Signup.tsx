@@ -35,6 +35,11 @@ const Signup = () => {
       setErrors(fieldErrors as Partial<SignupInputState>);
       return;
     }
+    const isCollegeEmail = input.email.split('@')[1].split('.')[0];
+    if(isCollegeEmail != 'iiitranchi') {
+      toast.error("Use IIIT Ranchi email only");
+      return;
+    }
     try {
       setLoading(true);
       setInput({ name: '', email: '', password: '', year: '', branch: '' });

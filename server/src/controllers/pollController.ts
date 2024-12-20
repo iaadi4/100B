@@ -27,7 +27,7 @@ const remove = async (req: Request, res: Response) => {
         if (!pollId) {
             return res.status(400).json({ message: "Poll ID is required" });
         }
-        await pollService.remove(pollId);
+        await pollService.remove(pollId, req.user.id);
         return res.status(200).json({
             message: "Poll removed",
         });
@@ -83,7 +83,7 @@ const getPoll = async (req: Request, res: Response) => {
 
 const getPolls = async (req: Request, res: Response) => {
     try {
-        const { pageNo } = req.query; 
+        const { pageNo } = req.query;
         const pageNumber = parseInt(pageNo as string, 10);
         if (!pageNo || isNaN(pageNumber)) {
             return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
@@ -102,8 +102,12 @@ const getPolls = async (req: Request, res: Response) => {
 
 const getPollWithFilters = async (req: Request, res: Response) => {
     try {
-        const { year, branch, pageNo } = req.body;
-        const polls = await pollService.getPollWithFilters(pageNo, req.body.ascending, year, branch);
+        const { year, branch, pageNo, searchTitle, ascending } = req.query;
+        const pageNumber = parseInt(pageNo as string, 10);
+        if (!pageNo || isNaN(pageNumber)) {
+            return res.status(statusCode.BAD_REQUEST).json({ message: "Invalid page number" });
+        }
+        const polls = await pollService.getPollsByFilters(pageNo as string, ascending as string, searchTitle as string, year as string, branch as string);
         return res.status(statusCode.SUCCESS).json({
             polls
         })
@@ -115,19 +119,6 @@ const getPollWithFilters = async (req: Request, res: Response) => {
     }
 }
 
-const getPollsByTitle = async (req: Request, res: Response) => {
-    try {
-        const polls = await pollService.getPollsByTitle(req.body.pageNo, req.body.ascending, req.body.searchTitle);
-        return res.status(statusCode.SUCCESS).json({
-            polls
-        })
-    } catch (error) {
-        return res.status(statusCode.INTERNAL_ERROR).json({
-            message: "Failed to fetch polls",
-            error: error
-        });
-    }
-}
 
 export default {
     create,
@@ -135,7 +126,6 @@ export default {
     closePoll,
     extendPoll,
     getPolls,
-    getPollsByTitle,
     getPoll,
     getPollWithFilters
 }

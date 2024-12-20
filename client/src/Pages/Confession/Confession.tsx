@@ -1,8 +1,10 @@
 
 const Confession = () => {
   return (
-    <div>Confession</div>
+    <div>
+      
+    </div>
   )
 }
 
-export default Confession
+export default Confession;
