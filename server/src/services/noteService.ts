@@ -87,16 +87,16 @@ class NoteService {
         }
     }
 
-    async getNotesWithFilter(pageNo: string, ascending: string, searchTitle: string, subject?: string, year?: string, branch?: string) {
+    async getNotesWithFilter(pageNo: string, ascending: string, searchTitle?: string, subject?: string, year?: string, branch?: string) {
         try {
-            if (!ascending) ascending = 'true';
+            if (!ascending) ascending = 'false';
             const filters: Ifilters = { title: { contains: searchTitle, mode: 'insensitive' } };
             if (year) filters.year = year;
             if (subject) filters.subject = subject;
             if (branch) filters.branch = branch;
             const notes = await prisma.note.findMany({
-                skip: (parseInt(pageNo) - 1) * 6,
-                take: 6,
+                skip: (parseInt(pageNo) - 1) * 16,
+                take: 16,
                 where: filters,
                 orderBy: {
                     createdAt: ascending == 'true' ? 'asc' : 'desc'
