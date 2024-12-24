@@ -13,7 +13,7 @@ import Chats from './Pages/Chat/Chats';
 import Polls from './Pages/Poll/Polls';
 import Confession from './Pages/Confession/Confession';
 import Announcements from './Pages/Announcement/Announcements';
-import Profile from './Pages/Profile/Profile';
+import Settings from './Pages/Settings/Settings';
 
 function App() {
   const user = useSelector((state: any) => state.auth.userData);
@@ -29,7 +29,7 @@ function App() {
           <Route path='/polls' element={<Polls />} />
           <Route path='/confession' element={<Confession />} />
           <Route path='/announcements' element={<Announcements />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/settings' element={<Settings />} />
         </Route>
         <Route path="/signup" element={user ? <Navigate to={'/'} /> : <Signup />} />
         <Route path="/login" element={user ? <Navigate to={'/'} /> : <Login />} />
