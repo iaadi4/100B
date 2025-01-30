@@ -106,18 +106,6 @@ const SidebarMenu = () => {
           <Tooltip>
             <TooltipTrigger>
               <NavLink
-                to="/announcements"
-                className={({ isActive }) => `h-10 w-10 flex justify-center items-center p-2 cursor-pointer rounded-lg mt-3 ${isActive ? 'bg-orange-500 text-white' : ''}`}>
-                <IoNotifications className="w-5 h-5" />
-              </NavLink>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>Announcements</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger>
-              <NavLink
                 to="/settings"
                 className={({ isActive }) => `h-10 w-10 mb-6 flex justify-center items-center p-2 cursor-pointer rounded-lg mt-3 ${isActive ? 'bg-orange-500 text-white' : ''}`}>
                 <RiSettings3Fill className="w-5 h-5" />

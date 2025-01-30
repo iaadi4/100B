@@ -12,7 +12,6 @@ import Notes from './Pages/Note/Notes';
 import Chats from './Pages/Chat/Chats';
 import Polls from './Pages/Poll/Polls';
 import Confession from './Pages/Confession/Confession';
-import Announcements from './Pages/Announcement/Announcements';
 import Settings from './Pages/Settings/Settings';
 
 function App() {
@@ -28,7 +27,6 @@ function App() {
           <Route path='/chats' element={<Chats />} />
           <Route path='/polls' element={<Polls />} />
           <Route path='/confession' element={<Confession />} />
-          <Route path='/announcements' element={<Announcements />} />
           <Route path='/settings' element={<Settings />} />
         </Route>
         <Route path="/signup" element={user ? <Navigate to={'/'} /> : <Signup />} />
